@@ -1,6 +1,15 @@
+:root {
+    --dark-purple: #2e0854;
+    --light-sage: #d6d4c9;
+    --gold: #b89749;
+    --sage-green: #9caf88;
+    --soft-purple: #3c2f72;
+    --black: #000000;
+}
+
 html, body {
-    background-color: #2e0854; /* dark purple */
-    color: #d6d4c9; /* light sage for text */
+    background-color: var(--dark-purple);
+    color: var(--light-sage);
 }
 
 .products-container {
@@ -21,7 +30,7 @@ html, body {
         .product-card {
             display: flex;
             margin-bottom: 1.5rem;
-            border-bottom: .5em solid #b89749; /* gold */
+            border-bottom: .5em solid var(--gold); /* gold */
             padding-bottom: 1.5rem;
 
             .product-image {
@@ -29,23 +38,23 @@ html, body {
                 height: 150px;
                 margin-right: 1.5rem;
                 border-radius: 12px;
-                border: 3px solid #9caf88; /* sage green */
+                border: 3px solid var(--sage-green); /* sage green */
             }
         }
     }
 
     .product-card {
-        border: .5em solid #9caf88; /* sage green */
+        border: .5em solid var(--sage-green); /* sage green */
         border-radius: 8px;
         overflow: hidden;
         box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         transition: transform 0.3s ease;
-        background-color: #3c2f72; /* a softer dark purple */
+        background-color: var(--soft-purple); /* a softer dark purple */
 
         &:hover {
             transform: translateY(-5px);
             box-shadow: 0 6px 12px rgba(185, 151, 73, 0.8); /* gold glow */
-            border-color: #b89749; /* gold */
+            border-color: var(--gold); /* gold */
         }
 
         .product-image {
@@ -60,12 +69,12 @@ html, body {
             .product-name {
                 margin-top: 0;
                 font-size: 1.2rem;
-                color: #d6d4c9; /* light sage */
+                color: var(--light-sage); /* light sage */
             }
 
             .product-price {
                 font-weight: bold;
-                color: #b89749; /* gold */
+                color: var(--gold); /* gold */
             }
         }
     }
@@ -78,16 +87,16 @@ html, body {
     a {
         text-decoration: none;
         padding: 0.5rem 1rem;
-        color: #d6d4c9; /* light sage */
+        color: var(--light-sage); /* light sage */
 
         &.active {
             font-weight: bold;
             text-decoration: underline;
-            color: #b89749; /* gold */
+            color: var(--gold); /* gold */
         }
 
         &:hover {
-            color: #b89749; /* gold */
+            color: var(--gold); /* gold */
         }
     }
 }
@@ -97,8 +106,8 @@ nav ul {
     flex-direction: row;
     gap: 1rem;
     list-style: none;
-    background-color: #3c2f72; /* dark purple */
-    color: #d6d4c9; /* light sage */
+    background-color: var(--soft-purple); /* dark purple */
+    color: var(--light-sage); /* light sage */
     padding: 1em;
     border-radius: 8px;
 }
@@ -106,21 +115,33 @@ nav ul {
 nav ul a:hover {
     border-radius: 12px;
     padding: .5em;
-    background-color: #9caf88; /* sage green */
-    color: #2e0854; /* dark purple */
+    background-color: var(--sage-green); /* sage green */
+    color: var(--dark-purple); /* dark purple */
 }
 
-ul a {
+nav ul a {
     text-decoration: none;
     color: inherit;
 }
 
+/* Style for links outside of navigation */
+a:not(nav a) {
+    color: var(--sage-green); /* sage green */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:not(nav a):hover {
+    color: var(--gold); /* gold */
+    text-decoration: underline;
+}
+
 h1 {
-    color: #b89749; /* gold */
+    color: var(--gold); /* gold */
 }
 
 img {
-    border: .5em solid #9caf88; /* sage green */
+    border: .5em solid var(--sage-green); /* sage green */
     border-radius: 25px 50px;
 }
 
@@ -137,5 +158,67 @@ img {
 }
 
 .nav-logout-btn:hover {
-    color: #b89749; /* gold */
+    color: var(--gold); /* gold */
+}
+
+.hero{
+    border-top: 2px solid var(--header-color);
+    border-bottom: 2px solid var(--header-color);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    max-height: 400px;
+}
+
+.coverPhoto {
+    position: relative;
+    width: 85%;
+    max-height: 70vh;
+    overflow: hidden;
+    margin: 2rem auto;
+    border-radius: 25px;
+    border: 0.5em solid var(--sage-green); /* sage green */
+    box-sizing: border-box;
+}
+
+.coverPhoto picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.coverPhoto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 15px;
+    border: none;
+    display: block;
+}
+
+.coverPhoto button {
+    position: absolute;
+    top: 65%;
+    left: 25%;
+    transform: translate(-50%, -50%);
+    padding: 1rem 2rem;
+    background-color: rgba(184, 151, 73, 0.85); /* gold with opacity */
+    color: var(--dark-purple); /* dark purple */
+    border: none;
+    border-radius: 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0.25em 0.25em 0.5em rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+    z-index: 2;
+    -webkit-text-stroke: .05px var(--black);
+}
+
+.coverPhoto button:hover {
+    background-color: rgba(156, 175, 136, 1); /* sage green full opacity */
+    transform: translate(-50%, -50%) scale(1.05);
+    box-shadow: 0.35em 0.35em 0.6em rgba(0, 0, 0, 0.5);
+    -webkit-text-stroke: .05px var(--black);
 }

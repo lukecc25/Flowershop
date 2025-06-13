@@ -1,5 +1,17 @@
 <%- include('partials/header') %>
 <main>
-    <h1>Welcome to the Sun Shop</h1><p>The place to be when ordering a bouquet of flowers</p>
+    <h1>Welcome to the Sun Shop</h1>
+    <div class="coverPhoto">
+    <picture>                
+        <source media="(max-width: 600px)" srcset="/images/flowerdisplay_small.webp 750w" sizes="750px" />
+        <source media="(max-width: 900px)" srcset="/images/flowerdisplay_small.webp 1000w" sizes="1000px" />
+        <img src="/images/flowerdisplay_large.webp" 
+             srcset="/images/flowerdisplay_large.webp 1200w"
+             sizes="1200px"
+             alt="Beautiful flower display" />
+    </picture>    
+    <button onclick="window.location.href='/accounts/login'">Order Now</button>
+</div>
+<p>The place to be when ordering a bouquet of flowers</p>
 </main>
 <%- include('partials/footer') %>
