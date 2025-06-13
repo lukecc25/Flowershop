@@ -201,24 +201,39 @@ img {
     position: absolute;
     top: 65%;
     left: 25%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) translateY(-2px);
     padding: 1rem 2rem;
-    background-color: rgba(184, 151, 73, 0.85); /* gold with opacity */
-    color: var(--dark-purple); /* dark purple */
-    border: none;
+    background-color: rgba(184, 151, 73, 0.99);
+    color: var(--dark-purple);
+    border: .25em solid var(--sage-green);
     border-radius: 20px;
     font-size: 1.2rem;
     font-weight: bold;
     cursor: pointer;
-    box-shadow: 0.25em 0.25em 0.5em rgba(0, 0, 0, 0.4);
+    box-shadow: 
+        0.25em 0.25em 0.5em rgba(0, 0, 0, 0.6),
+        inset 0 -0.15em 0.3em rgba(0, 0, 0, 0.3),
+        inset 0 0.15em 0.3em rgba(255, 255, 255, 0.2);
     transition: all 0.3s ease;
     z-index: 2;
     -webkit-text-stroke: .05px var(--black);
 }
 
 .coverPhoto button:hover {
-    background-color: rgba(156, 175, 136, 1); /* sage green full opacity */
-    transform: translate(-50%, -50%) scale(1.05);
-    box-shadow: 0.35em 0.35em 0.6em rgba(0, 0, 0, 0.5);
+    background-color: rgba(156, 175, 136, 0.99);
+    transform: translate(-50%, -50%) translateY(-4px);
+    border-color: var(--gold);
+    box-shadow: 
+        0.35em 0.35em 0.6em rgba(0, 0, 0, 0.7),
+        inset 0 -0.15em 0.3em rgba(0, 0, 0, 0.4),
+        inset 0 0.15em 0.3em rgba(255, 255, 255, 0.3);
     -webkit-text-stroke: .05px var(--black);
+}
+
+.coverPhoto button:active {
+    transform: translate(-50%, -50%) translateY(0);
+    border-color: var(--gold);
+    box-shadow: 
+        0.15em 0.15em 0.3em rgba(0, 0, 0, 0.5),
+        inset 0 0.1em 0.2em rgba(0, 0, 0, 0.4);
 }
