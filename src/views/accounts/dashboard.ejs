@@ -1,0 +1,44 @@
+<%- include('../partials/header') %>
+<main>
+    <h1>Account Dashboard</h1>
+
+    <% if (errors && errors.length > 0) { %>
+        <div class="error-messages">
+            <ul>
+                <% errors.forEach(error => { %>
+                    <li><%= error %></li>
+                <% }); %>
+            </ul>
+        </div>
+    <% } %>
+
+    <div class="dashboard-welcome">
+        <h2>Welcome, <%= user.email %>!</h2>
+        <p>You logged in on: <%= loginTime.toLocaleString() %></p>
+    </div>
+
+    <div class="dashboard-content">
+        <section class="account-info">
+            <h3>Account Information</h3>
+            <p><strong>Email:</strong> <%= user.email %></p>
+            <p><strong>Role:</strong> <%= user.role_name || 'User' %></p>
+            <p><strong>Session Status:</strong> Active</p>
+            <p><strong>Login Time:</strong> <%= loginTime.toLocaleString() %></p>
+        </section>
+
+        <section class="dashboard-actions">
+            <h3>Quick Actions</h3>
+            <ul>
+                <li><a href="/dashboard">Product Management Dashboard</a></li>
+                <li><a href="/">Return to Home Page</a></li>
+            </ul>
+        </section>
+    </div>
+
+    <div class="logout-section">
+        <form action="/accounts/logout" method="POST" class="logout-form">
+            <button type="submit" class="logout-button">Logout</button>
+        </form>
+    </div>
+</main>
+<%- include('../partials/footer') %>

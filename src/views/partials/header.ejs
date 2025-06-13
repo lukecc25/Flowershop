@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/main.css">
+    <% if (NODE_ENV.includes('dev')) { %>
+        <script>
+            const host = window.location.hostname;
+            const currentPort = window.location.port;
+            const wsPort = currentPort ? (parseInt(currentPort) + 1) : 3001;
+            const ws = new WebSocket(`ws://${host}:${wsPort}`);
+            ws.onclose = () => {
+                setTimeout(() => location.reload(), 2000);
+            };
+        </script>
+    <% } %>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About</a></li>
+
+                <li><a href="/dashboard">Dashboard</a></li>
+
+                <% if (typeof req !== 'undefined' && req.session && req.session.isLoggedIn) { %>
+                    <li><a href="/accounts/dashboard">My Account</a></li>
+                    <li>
+                        <form action="/accounts/logout" method="POST" style="display: inline;">
+                            <button type="submit" class="nav-logout-btn">Logout</button>
+                        </form>
+                    </li>
+                <% } else { %>
+                    <li><a href="/accounts/login">Login</a></li>
+                    <li><a href="/accounts/register">Register</a></li>
+                <% } %>
+            </ul>
+        </nav>
+    </header>
