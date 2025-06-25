@@ -101,22 +101,29 @@ html, body {
     }
 }
 
+nav {
+    display: flex;
+    align-items: center;
+    background-color: var(--soft-purple);
+    padding: 1em;
+    border-radius: 8px;
+    gap: 2rem;
+}
+
 nav ul {
     display: flex;
     flex-direction: row;
     gap: 1rem;
     list-style: none;
-    background-color: var(--soft-purple); /* dark purple */
-    color: var(--light-sage); /* light sage */
-    padding: 1em;
-    border-radius: 8px;
+    margin: 0;
+    padding: 0;
 }
 
 nav ul a:hover {
     border-radius: 12px;
     padding: .5em;
-    background-color: var(--sage-green); /* sage green */
-    color: var(--dark-purple); /* dark purple */
+    background-color: rgb(33, 80, 33); /* sage green */
+    color: var(--light-sage); /* dark purple */
 }
 
 nav ul a {
@@ -236,4 +243,10 @@ img {
     box-shadow: 
         0.15em 0.15em 0.3em rgba(0, 0, 0, 0.5),
         inset 0 0.1em 0.2em rgba(0, 0, 0, 0.4);
+}
+
+#logo {
+    height: 60px;
+    width: auto;
+    border: none;
 }

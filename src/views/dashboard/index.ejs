@@ -1,0 +1,35 @@
+<%- include('../partials/header') %>
+<main>
+    <h1>Product Management Dashboard</h1>
+ 
+    <% if (typeof req !== 'undefined' && req.query.success) { %>
+        <div class="success-message">
+            <p><%= req.query.success %></p>
+        </div>
+    <% } %>
+ 
+    <nav class="dashboard-nav">
+        <h2>Product Management</h2>
+        <ul>
+            <li><a href="/dashboard/add-product">Add Product</a></li>
+            <li><a href="/dashboard/edit-product">Edit Product</a></li>
+        </ul>
+    </nav>
+ 
+    <section class="products-overview">
+        <h2>Current Products</h2>
+        <% if (products.length === 0) { %>
+            <p>No products added yet. <a href="/dashboard/add-product">Add your first product</a></p>
+        <% } else { %>
+            <div class="products-grid">
+                <% products.forEach(product => { %>
+                    <div class="product-card">
+                        <h3><%= product.name %></h3>
+                        <p>$<%= product.price %></p>
+                    </div>
+                <% }); %>
+            </div>
+        <% } %>
+    </section>
+</main>
+<%- include('../partials/footer') %>

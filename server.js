@@ -85,8 +85,8 @@ app.use(flashMessages);
 app.use('/', indexRoutes);
 app.use('/products', exploreRoutes);
 app.use('/test', testRoutes);
-app.use('/dashboard', dashboardRoutes);
 app.use('/accounts', accountRoutes);
+app.use('/dashboard', dashboardRoutes);
 
 // Manual error test route
 app.get('/manual-error', (req, res, next) => {
