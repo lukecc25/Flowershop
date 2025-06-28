@@ -13,6 +13,7 @@ import indexRoutes from './src/routes/index.js';
 import exploreRoutes from './src/routes/products/index.js';
 import testRoutes from './src/routes/test.js';
 import accountRoutes from './src/routes/accounts/index.js';
+import flowersRoutes from './src/routes/flowers.js';
 
 // Import global middleware
 import {
@@ -86,6 +87,7 @@ app.use('/', indexRoutes);
 app.use('/products', exploreRoutes);
 app.use('/test', testRoutes);
 app.use('/accounts', accountRoutes);
+app.use('/flowers', flowersRoutes);
 app.use('/dashboard', dashboardRoutes);
 
 // Manual error test route

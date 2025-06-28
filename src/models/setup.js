@@ -1,174 +1,148 @@
 import db from './db.js';
+
 const verbose = process.env.NODE_ENV === 'development';
 
 /**
- * SQL to create the categories table if it doesn't exist.
+ * SQL to drop the flowers table if it exists
  */
-const createCategoriesTable = `
-    CREATE TABLE IF NOT EXISTS categories (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(100) NOT NULL,
-        slug VARCHAR(100) NOT NULL UNIQUE,
-        description TEXT,
-        parent_id INTEGER REFERENCES categories(id),
-        show_in_nav BOOLEAN DEFAULT false,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
+const dropFlowersTable = `
+    DROP TABLE IF EXISTS flowers CASCADE;
 `;
 
 /**
- * SQL to create the products table if it doesn't exist.
+ * SQL to create the flowers table
  */
-const createProductsTable = `
-    CREATE TABLE IF NOT EXISTS products (
-        id SERIAL PRIMARY KEY,
+const createFlowersTable = `
+    CREATE TABLE IF NOT EXISTS flowers (
+        product_id INTEGER PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
-        description TEXT NOT NULL,
+        category VARCHAR(100) NOT NULL,
         price DECIMAL(10,2) NOT NULL,
-        image VARCHAR(500) NOT NULL
+        photo VARCHAR(255) NOT NULL
     );
 `;
 
 /**
- * SQL to create the roles table.
+ * Flower data you provided
  */
-const createRolesTable = `
-CREATE TABLE IF NOT EXISTS roles (
-    id SERIAL PRIMARY KEY,
-    role_name VARCHAR(50) NOT NULL UNIQUE
-);
-`;
-
-/**
- * SQL to insert default roles.
- */
-const insertDefaultRoles = `
-INSERT INTO roles (id, role_name) VALUES 
-    (0, 'user'),
-    (1, 'employee'), 
-    (2, 'management')
-ON CONFLICT (id) DO NOTHING;
-`;
-
-/**
- * SQL to create the users table.
- */
-const createUsersTable = `
-CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    role_id INTEGER DEFAULT 0 REFERENCES roles(id),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-`;
-
-// Initial categories
-const initialCategories = [
+const sampleFlowers = [
     {
-        name: "Men's Clothing",
-        slug: "mens",
-        description: "Explore our collection of men's fashion and apparel",
-        parent_id: null,
-        show_in_nav: true
+        product_id: 1,
+        name: 'Azalea',
+        category: 'Shrubs',
+        price: 15.95,
+        photo: 'https://cdn.pixabay.com/photo/2018/05/12/19/24/azalea-3394380_1280.jpg'
     },
     {
-        name: "Women's Clothing", 
-        slug: "womens",
-        description: "Discover our women's fashion line and accessories",
-        parent_id: null,
-        show_in_nav: true
+        product_id: 2,
+        name: 'Camellia',
+        category: 'Shrubs',
+        price: 18.95,
+        photo: 'https://cdn.pixabay.com/photo/2022/05/02/21/43/camellia-7170471_1280.jpg'
     },
     {
-        name: "Footwear",
-        slug: "shoes", 
-        description: "Men's shoes and footwear",
-        parent_id: 1,
-        show_in_nav: false
+        product_id: 3,
+        name: 'Gardenia',
+        category: 'Shrubs',
+        price: 19.95,
+        photo: 'https://cdn.pixabay.com/photo/2020/04/27/02/41/gardenia-5097886_1280.jpg'
     },
     {
-        name: "Accessories",
-        slug: "accessories",
-        description: "Men's accessories and extras",
-        parent_id: 1,
-        show_in_nav: false
+        product_id: 4,
+        name: 'Hibiscus',
+        category: 'Shrubs',
+        price: 25.95,
+        photo: 'https://cdn.pixabay.com/photo/2021/11/10/14/25/hibiscus-6784088_1280.jpg'
     },
     {
-        name: "Footwear",
-        slug: "womens-shoes", 
-        description: "Women's shoes and footwear",
-        parent_id: 2,
-        show_in_nav: false
+        product_id: 5,
+        name: 'Lantana',
+        category: 'Shrubs',
+        price: 22.95,
+        photo: 'https://cdn.pixabay.com/photo/2023/06/02/23/44/flower-8036709_1280.jpg'
     },
     {
-        name: "Accessories",
-        slug: "womens-accessories",
-        description: "Women's accessories and extras", 
-        parent_id: 2,
-        show_in_nav: false
+        product_id: 6,
+        name: 'Nandina',
+        category: 'Shrubs',
+        price: 16.95,
+        photo: 'https://cdn.pixabay.com/photo/2021/11/09/16/59/nandina-domestica-6781943_1280.jpg'
+    },
+    {
+        product_id: 7,
+        name: 'Begonia',
+        category: 'Container Plants',
+        price: 12.95,
+        photo: 'https://cdn.pixabay.com/photo/2017/04/27/04/45/begonia-flower-2264432_1280.jpg'
+    },
+    {
+        product_id: 8,
+        name: 'Coleus',
+        category: 'Container Plants',
+        price: 9.95,
+        photo: 'https://cdn.pixabay.com/photo/2023/05/14/23/49/leaves-7993903_1280.jpg'
+    },
+    {
+        product_id: 9,
+        name: 'Geranium',
+        category: 'Container Plants',
+        price: 11.95,
+        photo: 'https://cdn.pixabay.com/photo/2016/06/06/12/04/geranium-1439280_1280.jpg'
+    },
+    {
+        product_id: 10,
+        name: 'Hydrangea',
+        category: 'Herbaceous Perennials',
+        price: 8.95,
+        photo: 'https://cdn.pixabay.com/photo/2019/04/17/13/55/hydrangea-4134289_1280.jpg'
     }
 ];
 
-const insertCategory = async (category, verbose = true) => {
-    const query = `
-        INSERT INTO categories (name, slug, description, parent_id, show_in_nav)
-        VALUES ($1, $2, $3, $4, $5)
-        ON CONFLICT (slug) DO NOTHING
-        RETURNING id, name, slug;
-    `;
-    const values = [category.name, category.slug, category.description, category.parent_id, category.show_in_nav];
-    const result = await db.query(query, values);
+/**
+ * SQL to insert flower records
+ */
+const insertSampleFlowers = `
+    INSERT INTO flowers (product_id, name, category, price, photo)
+    VALUES ($1, $2, $3, $4, $5)
+    ON CONFLICT (product_id) DO NOTHING;
+`;
 
-    if (result.rows.length > 0 && verbose) {
-        console.log(`Created category: ${result.rows[0].name}`);
-    } else if (verbose) {
-        console.log(`Category already exists, skipping: ${category.name}`);
-    }
-};
-
+/**
+ * Main setup function
+ */
 const setupDatabase = async () => {
-    const verbose = process.env.DISABLE_SQL_LOGGING !== 'true';
-
     try {
-        if (verbose) console.log('Setting up database...');
+        if (verbose) console.log('Dropping flowers table if it exists...');
+        await db.query(dropFlowersTable);
 
-        // Create the categories table
-        await db.query(createCategoriesTable);
-        if (verbose) console.log('Categories table ready');
+        if (verbose) console.log('Creating flowers table...');
+        await db.query(createFlowersTable);
 
-        // Create the products table
-        await db.query(createProductsTable);
-        if (verbose) console.log('Products table ready');
-
-        // Create the roles table
-        await db.query(createRolesTable);
-        if (verbose) console.log('Roles table ready');
-
-        // Insert default roles
-        await db.query(insertDefaultRoles);
-        if (verbose) console.log('Default roles inserted');
-
-        // Create the users table
-        await db.query(createUsersTable);
-        if (verbose) console.log('Users table ready');
-
-        // Insert initial categories
-        for (const category of initialCategories) {
-            await insertCategory(category, verbose);
+        if (verbose) console.log('Inserting flower data...');
+        for (const flower of sampleFlowers) {
+            await db.query(insertSampleFlowers, [
+                flower.product_id,
+                flower.name,
+                flower.category,
+                flower.price,
+                flower.photo
+            ]);
         }
 
-        if (verbose) console.log('Database setup complete');
+        if (verbose) console.log('Flower table setup complete!');
         return true;
     } catch (error) {
-        console.error('Error setting up database:', error.message);
+        console.error('Error setting up flower table:', error.message);
         throw error;
     }
 };
 
-
+/**
+ * Test connection utility
+ */
 const testConnection = async () => {
     try {
-        const result = await db.query('SELECT NOW() as current_time');
+        const result = await db.query('SELECT NOW() AS current_time');
         console.log('Database connection successful:', result.rows[0].current_time);
         return true;
     } catch (error) {

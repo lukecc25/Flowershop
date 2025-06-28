@@ -1,59 +1,39 @@
 import { Router } from 'express';
-import {
-  getNavigationCategories,
-  getCategoryBySlug,
-  getChildCategories,
-  getProductsByCategory,
-  getRandomNavigationCategory
-} from '../../models/categories/index.js';
+import db from '../../models/db.js';
 
 const router = Router();
 
 /**
- * /products - redirect to a random parent category.
+ * /products - show all flowers or filter by category
  */
 router.get('/', async (req, res, next) => {
   try {
-    const randomCategory = await getRandomNavigationCategory();
-
-    if (!randomCategory) {
-      const error = new Error('No categories available');
-      error.status = 404;
-      return next(error);
+    const { category, display = 'grid' } = req.query;
+    
+    let query = 'SELECT * FROM flowers';
+    let values = [];
+    
+    if (category) {
+      query += ' WHERE category = $1';
+      values.push(category);
     }
-
-    res.redirect(`/products/${randomCategory.slug}`);
-  } catch (err) {
-    next(err);
-  }
-});
-
-/**
- * /products/:category - show a category and its subcategories/products.
- */
-router.get('/:category', async (req, res, next) => {
-  try {
-    const { category } = req.params;
-    const { display = 'grid' } = req.query;
-
-    const categoryData = await getCategoryBySlug(category);
-    if (!categoryData) {
-      const error = new Error('Category Not Found');
-      error.status = 404;
-      return next(error);
-    }
-
-    const subcategories = await getChildCategories(categoryData.id);
-    const products = await getProductsByCategory(categoryData.id);
-
+    
+    query += ' ORDER BY name';
+    
+    const result = await db.query(query, values);
+    const flowers = result.rows;
+    
+    // Get unique categories for filtering
+    const categoriesResult = await db.query('SELECT DISTINCT category FROM flowers ORDER BY category');
+    const categories = categoriesResult.rows.map(row => row.category);
+    
     res.render('products', {
-      title: `Exploring ${categoryData.name}`,
+      title: category ? `Flowers - ${category}` : 'All Flowers',
       display,
-      categoryData,
-      subcategories,
-      products,
-      hasProducts: products.length > 0,
-      hasSubcategories: subcategories.length > 0
+      flowers,
+      categories,
+      selectedCategory: category,
+      hasFlowers: flowers.length > 0
     });
   } catch (err) {
     next(err);
@@ -61,12 +41,62 @@ router.get('/:category', async (req, res, next) => {
 });
 
 /**
- * /products/:category/:id - redirect to category view.
- * This is useful if someone tries to go directly to a product without a details page.
+ * /products/:category - show flowers filtered by category
  */
-router.get('/:category/:id', (req, res) => {
-  const { category } = req.params;
-  res.redirect(`/products/${category}`);
+router.get('/:category', async (req, res, next) => {
+  try {
+    const { category } = req.params;
+    const { display = 'grid' } = req.query;
+
+    const result = await db.query('SELECT * FROM flowers WHERE category = $1 ORDER BY name', [category]);
+    const flowers = result.rows;
+    
+    if (flowers.length === 0) {
+      const error = new Error('Category Not Found');
+      error.status = 404;
+      return next(error);
+    }
+
+    // Get unique categories for filtering
+    const categoriesResult = await db.query('SELECT DISTINCT category FROM flowers ORDER BY category');
+    const categories = categoriesResult.rows.map(row => row.category);
+
+    res.render('products', {
+      title: `Flowers - ${category}`,
+      display,
+      flowers,
+      categories,
+      selectedCategory: category,
+      hasFlowers: flowers.length > 0
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * /products/:category/:id - show individual flower details
+ */
+router.get('/:category/:id', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    
+    const result = await db.query('SELECT * FROM flowers WHERE product_id = $1', [id]);
+    const flower = result.rows[0];
+    
+    if (!flower) {
+      const error = new Error('Flower Not Found');
+      error.status = 404;
+      return next(error);
+    }
+
+    res.render('flower-detail', {
+      title: flower.name,
+      flower
+    });
+  } catch (err) {
+    next(err);
+  }
 });
 
 export default router;

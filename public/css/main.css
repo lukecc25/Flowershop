@@ -250,3 +250,81 @@ img {
     width: auto;
     border: none;
 }
+
+/* Flowers Page Styles */
+.flowers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.flower-card {
+    background: var(--soft-purple);
+    border: 2px solid var(--sage-green);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.flower-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    border-color: var(--gold);
+}
+
+.flower-image {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    
+}
+
+.flower-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+    border: none;
+    border-radius: 0;
+}
+
+.flower-card:hover .flower-image img {
+    transform: scale(1.05);
+}
+
+.flower-info {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.flower-name {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--gold);
+    margin: 0 0 0.5rem 0;
+}
+
+.flower-category {
+    font-size: 1rem;
+    color: var(--light-sage);
+    margin: 0 0 0.5rem 0;
+    font-style: italic;
+}
+
+.flower-price {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--sage-green);
+    margin: 0;
+}
+
+.no-flowers {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--light-sage);
+    margin: 2rem;
+}

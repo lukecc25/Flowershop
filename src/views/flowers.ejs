@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+
+<main>
+    <h1>Our Beautiful Flowers</h1>
+    
+    <% if (flowers && flowers.length > 0) { %>
+        <div class="flowers-grid">
+            <% flowers.forEach(flower => { %>
+                <div class="flower-card">
+                    <div class="flower-image">
+                        <img src="<%= flower.photo %>" alt="<%= flower.name %>">
+                    </div>
+                    <div class="flower-info">
+                        <h3 class="flower-name"><%= flower.name %></h3>
+                        <p class="flower-category"><%= flower.category %></p>
+                        <p class="flower-price">$<%= parseFloat(flower.price).toFixed(2) %></p>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    <% } else { %>
+        <p class="no-flowers">No flowers available at the moment.</p>
+    <% } %>
+</main>
+
+<%- include('partials/footer') %> 
