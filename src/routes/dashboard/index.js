@@ -18,19 +18,19 @@ router.get('/', requireAuth, async (req, res, next) => {
             res.render('dashboard/admin', {
                 title: 'Admin Dashboard',
                 flowers: flowers
-            });
+        });
         } else {
             // Regular user dashboard
             res.render('dashboard/user', {
                 title: 'User Dashboard',
                 user: req.session.user
-            });
+        });
         }
     } catch (error) {
         next(error);
     }
 });
-
+ 
 /**
  * Admin: Display the add flower form
  */
@@ -41,7 +41,7 @@ router.get('/add-flower', requireAdmin, (req, res) => {
         formData: {}
     });
 });
-
+ 
 /**
  * Admin: Process the add flower form submission
  */
@@ -103,7 +103,7 @@ router.post('/add-flower', requireAdmin, async (req, res, next) => {
         });
     }
 });
-
+ 
 /**
  * Admin: Display the edit flower page
  */
@@ -147,8 +147,8 @@ router.post('/edit-flower/:id', requireAdmin, async (req, res, next) => {
                 title: 'Edit Flower',
                 flower: { id: flowerId, name, category, price, photo },
                 errors: errors
-            });
-        }
+        });
+    }
         
         const flowerData = {
             name: name.trim(),

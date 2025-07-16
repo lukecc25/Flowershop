@@ -184,7 +184,7 @@ app.listen(PORT, async () => {
         console.log('Database connection successful');
         
         try {
-            await setupDatabase();
+        await setupDatabase();
             console.log('Database setup completed successfully');
         } catch (setupError) {
             console.error('Database setup failed:', setupError.message);

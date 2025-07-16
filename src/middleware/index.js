@@ -9,7 +9,7 @@ export const addGlobalData = async (req, res, next) => {
     res.locals.NODE_ENV = process.env.NODE_ENV || 'development';
 
     // Navigation categories - skip for now since categories table doesn't exist
-    res.locals.navigationCategories = [];
+        res.locals.navigationCategories = [];
 
     // Calculate cart count
     let cartCount = 0;
