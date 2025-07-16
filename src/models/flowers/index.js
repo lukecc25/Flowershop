@@ -45,10 +45,10 @@ async function getCategories() {
 /**
  * Gets a flower by ID
  */
-async function getFlowerById(flowerId) {
+async function getFlowerById(id) {
     try {
-        const query = 'SELECT * FROM flowers WHERE product_id = $1';
-        const result = await db.query(query, [flowerId]);
+        const query = 'SELECT * FROM flowers WHERE flower_id = $1';
+        const result = await db.query(query, [id]);
         return result.rows[0] || null;
     } catch (error) {
         console.error('Error fetching flower by ID:', error.message);

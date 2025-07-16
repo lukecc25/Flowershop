@@ -9,7 +9,10 @@ const router = express.Router();
  */
 router.get('/history', requireAuth, async (req, res) => {
     try {
+        console.log('Order history route hit');
+        console.log('Session user:', req.session.user);
         const orders = await getUserOrders(req.session.user.id);
+        console.log('Orders returned:', orders);
         
         res.render('orders/history', {
             title: 'Order History',

@@ -23,7 +23,7 @@
                             <p class="flower-description"><%= flower.description %></p>
                         <% } %>
                         <form action="/cart/add" method="POST" class="add-to-cart-form" onsubmit="return addToCart(event, '<%= flower.name %>')">
-                            <input type="hidden" name="flowerId" value="<%= flower.product_id %>">
+                            <input type="hidden" name="flowerId" value="<%= flower.flower_id %>">
                             <input type="hidden" name="flowerType" value="flower">
                             <input type="hidden" name="quantity" value="1">
                             <button type="submit" class="btn-add-to-cart">Add to Cart</button>

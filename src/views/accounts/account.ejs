@@ -1,79 +1,81 @@
 <%- include('../partials/header') %>
 <main>
-    <h1>My Account</h1>
+    <div class="account-container">
+        <h1 class="account-title">My Account</h1>
 
-    <% if (errors && errors.length > 0) { %>
-        <div class="error-messages">
-            <ul>
-                <% errors.forEach(error => { %>
-                    <li><%= error %></li>
-                <% }); %>
-            </ul>
-        </div>
-    <% } %>
-
-    <div class="dashboard-welcome">
-        <h2>Welcome, <%= user.email %>!</h2>
-        <p>You logged in on: <%= loginTime.toLocaleString() %></p>
-    </div>
-
-    <div class="dashboard-content">
-        <section class="account-info">
-            <h3>Account Information</h3>
-            <p><strong>Email:</strong> <%= user.email %></p>
-            <p><strong>Role:</strong> <%= isAdmin ? 'Admin' : (user.role_name || 'User') %></p>
-            <p><strong>Session Status:</strong> Active</p>
-            <p><strong>Login Time:</strong> <%= loginTime.toLocaleString() %></p>
-        </section>
-
-        <% if (isAdmin) { %>
-        <section class="flower-management">
-            <h2>Flower Management</h2>
-            <section class="flowers-overview">
-                <h3>Current Flowers</h3>
-                <% if (!flowers || flowers.length === 0) { %>
-                    <p>No flowers added yet. Add your first flower below.</p>
-                <% } else { %>
-                    <div class="flowers-grid">
-                        <% flowers.forEach(flower => { %>
-                            <div class="flower-card">
-                                <h4><%= flower.name %></h4>
-                                <p>Category: <%= flower.category %></p>
-                                <p>Price: $<%= flower.price %></p>
-                                <img src="<%= flower.photo %>" alt="<%= flower.name %>" style="width:80px;height:80px;object-fit:cover;"/>
-                            </div>
-                        <% }); %>
-                    </div>
-                <% } %>
-            </section>
-            <section class="add-flower-form">
-                <h3>Add New Flower</h3>
-                <form action="/dashboard/add-flower" method="POST">
-                    <label>Name: <input type="text" name="name" required></label><br>
-                    <label>Category: <input type="text" name="category" required></label><br>
-                    <label>Price: <input type="number" name="price" step="0.01" required></label><br>
-                    <label>Photo URL: <input type="text" name="photo" required></label><br>
-                    <button type="submit">Add Flower</button>
-                </form>
-            </section>
-        </section>
+        <% if (errors && errors.length > 0) { %>
+            <div class="error-messages">
+                <ul>
+                    <% errors.forEach(error => { %>
+                        <li><%= error %></li>
+                    <% }); %>
+                </ul>
+            </div>
         <% } %>
 
-        <section class="dashboard-actions">
-            <h3>Quick Actions</h3>
-            <ul>
-                <li><a href="/">Return to Home Page</a></li>
-                <% if (isAdmin) { %>
-                <li><a href="/dashboard">Full Admin Dashboard</a></li>
-                <% } %>
-            </ul>
-        </section>
-    </div>
+        <div class="dashboard-welcome card">
+            <h2>Welcome, <%= user.email %>!</h2>
+            <p>You logged in on: <%= loginTime.toLocaleString() %></p>
+        </div>
 
-    <div class="logout-section">
-        <form action="/accounts/logout" method="POST" class="logout-form">
-            <button type="submit" class="logout-button">Logout</button>
-        </form>
+        <div class="dashboard-content">
+            <section class="account-info card">
+                <h3>Account Information</h3>
+                <p><strong>Email:</strong> <%= user.email %></p>
+                <p><strong>Role:</strong> <%= isAdmin ? 'Admin' : (user.role_name || 'User') %></p>
+                <p><strong>Session Status:</strong> Active</p>
+                <p><strong>Login Time:</strong> <%= loginTime.toLocaleString() %></p>
+            </section>
+
+            <% if (isAdmin) { %>
+            <section class="flower-management card">
+                <h2>Flower Management</h2>
+                <section class="flowers-overview">
+                    <h3>Current Flowers</h3>
+                    <% if (!flowers || flowers.length === 0) { %>
+                        <p>No flowers added yet. Add your first flower below.</p>
+                    <% } else { %>
+                        <div class="flowers-grid">
+                            <% flowers.forEach(flower => { %>
+                                <div class="flower-card">
+                                    <h4><%= flower.name %></h4>
+                                    <p>Category: <%= flower.category %></p>
+                                    <p>Price: $<%= flower.price %></p>
+                                    <img src="<%= flower.photo %>" alt="<%= flower.name %>" style="width:80px;height:80px;object-fit:cover;"/>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } %>
+                </section>
+                <section class="add-flower-form">
+                    <h3>Add New Flower</h3>
+                    <form action="/dashboard/add-flower" method="POST">
+                        <label>Name: <input type="text" name="name" required></label><br>
+                        <label>Category: <input type="text" name="category" required></label><br>
+                        <label>Price: <input type="number" name="price" step="0.01" required></label><br>
+                        <label>Photo URL: <input type="text" name="photo" required></label><br>
+                        <button type="submit">Add Flower</button>
+                    </form>
+                </section>
+            </section>
+            <% } %>
+
+            <section class="dashboard-actions card">
+                <h3>Quick Actions</h3>
+                <ul>
+                    <li><a href="/">Return to Home Page</a></li>
+                    <% if (isAdmin) { %>
+                    <li><a href="/dashboard">Full Admin Dashboard</a></li>
+                    <% } %>
+                </ul>
+            </section>
+        </div>
+
+        <div class="logout-section card">
+            <form action="/accounts/logout" method="POST" class="logout-form">
+                <button type="submit" class="logout-button">Logout</button>
+            </form>
+        </div>
     </div>
 </main>
 <%- include('../partials/footer') %> 

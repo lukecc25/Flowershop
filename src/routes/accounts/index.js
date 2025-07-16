@@ -38,6 +38,7 @@ router.post('/login', async (req, res) => {
         req.session.isLoggedIn = true;
         req.session.user = user;
         req.session.loginTime = new Date();
+        console.log('Session after login:', req.session);
 
         req.flash('success', `Welcome back! You have successfully logged in.`);
         res.redirect('/accounts/account');

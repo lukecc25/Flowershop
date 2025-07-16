@@ -138,7 +138,7 @@ async function getUserOrders(userId) {
                    f.photo as flower_image
             FROM orders o
             LEFT JOIN order_items oi ON o.id = oi.order_id
-            LEFT JOIN flowers f ON oi.flower_id = f.id
+            LEFT JOIN flowers f ON oi.flower_id = f.flower_id
             WHERE o.user_id = $1
             ORDER BY o.order_date DESC, o.id DESC;
         `;
@@ -178,10 +178,10 @@ async function createOrder(orderData) {
             // Create order items
             for (const item of items) {
                 const itemQuery = `
-                    INSERT INTO order_items (order_id, product_id, quantity, price_at_time)
+                    INSERT INTO order_items (order_id, flower_id, quantity, price_at_time)
                     VALUES ($1, $2, $3, $4);
                 `;
-                await client.query(itemQuery, [orderId, item.product_id, item.quantity, item.price]);
+                await client.query(itemQuery, [orderId, item.flower_id, item.quantity, item.price]);
             }
             
             await client.query('COMMIT');

@@ -356,7 +356,7 @@ router.post('/checkout', async (req, res) => {
             user_id: userId,
             total_amount: req.session.cart.total,
             items: allItems.map(item => ({
-                product_id: item.id, // keep as product_id for DB, but it's a flower id
+                flower_id: item.id, // use flower_id for DB
                 quantity: item.quantity,
                 price: item.price
             }))

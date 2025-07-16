@@ -2,6 +2,7 @@ import db from './db.js';
 
 const verbose = process.env.NODE_ENV === 'development';
 
+
 /**
  * SQL to create the roles table
  */

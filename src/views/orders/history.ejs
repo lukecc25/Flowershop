@@ -1,84 +1,79 @@
 <%- include('../partials/header') %>
 <main>
-    <h1>Order History</h1>
+    <div class="account-container">
+        <h1 class="account-title">Order History</h1>
 
-    <%- include('../partials/flash') %>
+        <%- include('../partials/flash') %>
 
-    <% if (orders.length === 0) { %>
-        <div class="empty-orders">
-            <p>You haven't placed any orders yet.</p>
-            <a href="/flowers" class="btn">Start Shopping</a>
-        </div>
-    <% } else { %>
-        <!-- Debug info -->
-        <div style="background: #f0f0f0; padding: 10px; margin: 10px 0; font-family: monospace; font-size: 12px;">
-            <strong>Debug Info:</strong><br>
-            Total orders received: <%= orders.length %><br>
-            <% orders.forEach((order, index) => { %>
-                Order <%= index + 1 %>: ID=<%= order.id %>, Product=<%= order.product_name %>, Price=<%= order.price_at_time %><br>
-            <% }); %>
-        </div>
-        
-        <div class="orders-container">
-            <% 
-            // Group orders by order ID
-            const orderGroups = {};
-            orders.forEach(item => {
-                if (!orderGroups[item.id]) {
-                    orderGroups[item.id] = {
-                        id: item.id,
-                        total_amount: item.total_amount,
-                        order_date: item.order_date,
-                        status: item.status,
-                        items: []
-                    };
-                }
-                if (item.flower_name) {
-                    orderGroups[item.id].items.push({
-                        name: item.flower_name,
-                        quantity: item.quantity,
-                        price: item.price_at_time,
-                        image: item.flower_image || '/images/flowershopLogo.webp'
-                    });
-                }
-            });
-            %>
+        <% if (orders.length === 0) { %>
+            <div class="empty-orders card">
+                <p>You haven't placed any orders yet.</p>
+                <a href="/flowers" class="btn">Start Shopping</a>
+            </div>
+        <% } else { %>
+            <div class="orders-container">
+                <% 
+                // Group orders by order ID
+                const orderGroups = {};
+                orders.forEach(item => {
+                    if (!orderGroups[item.id]) {
+                        orderGroups[item.id] = {
+                            id: item.id,
+                            total_amount: item.total_amount,
+                            order_date: item.order_date,
+                            status: item.status,
+                            items: []
+                        };
+                    }
+                    if (item.flower_name) {
+                        orderGroups[item.id].items.push({
+                            name: item.flower_name,
+                            quantity: item.quantity,
+                            price: item.price_at_time,
+                            image: item.flower_image || '/images/flowershopLogo.webp'
+                        });
+                    }
+                });
+                %>
 
-            <% let userOrderNumber = 1; %>
-            <% Object.values(orderGroups).forEach(order => { %>
-                <div class="order-card">
-                    <div class="order-header">
-                        <h3>Order #<%= userOrderNumber++ %></h3>
-                        <div class="order-meta">
-                            <span class="order-date"><%= new Date(order.order_date).toLocaleDateString() %></span>
-                            <span class="order-status <%= order.status %>"><%= order.status %></span>
+                <% let userOrderNumber = 1; %>
+                <% Object.values(orderGroups).forEach((order, idx, arr) => { %>
+                    <div class="order-card card" style="margin-bottom: 2em;">
+                        <div class="order-header">
+                            <h3>Order #<%= userOrderNumber++ %></h3>
+                            <div class="order-meta">
+                                <span class="order-date"><%= new Date(order.order_date).toLocaleDateString() %></span>
+                                <span class="order-status <%= order.status %>"><%= order.status %></span>
+                            </div>
+                        </div>
+                        <div class="order-items">
+                            <% order.items.forEach(item => { %>
+                                <div class="order-item">
+                                    <div class="item-image">
+                                        <img src="<%= item.image || '/images/flowershopLogo.webp' %>" alt="<%= item.name %>" class="cart-flower-image">
+                                    </div>
+                                    <div class="item-details">
+                                        <h4><%= item.name %></h4>
+                                        <p>Quantity: <%= item.quantity %></p>
+                                        <p>Price: $<%= parseFloat(item.price || 0).toFixed(2) %></p>
+                                    </div>
+                                    <div class="item-total">
+                                        <p>$<%= (parseFloat(item.price || 0) * (item.quantity || 1)).toFixed(2) %></p>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                        
+                        <div class="order-total">
+                            <strong>Total: $<%= parseFloat(order.total_amount || 0).toFixed(2) %></strong>
                         </div>
                     </div>
-                    
-                    <div class="order-items">
-                        <% order.items.forEach(item => { %>
-                            <div class="order-item">
-                                <div class="item-image">
-                                    <img src="<%= item.image || '/images/flowershopLogo.webp' %>" alt="<%= item.name %>" class="cart-flower-image">
-                                </div>
-                                <div class="item-details">
-                                    <h4><%= item.name %></h4>
-                                    <p>Quantity: <%= item.quantity %></p>
-                                    <p>Price: $<%= parseFloat(item.price || 0).toFixed(2) %></p>
-                                </div>
-                                <div class="item-total">
-                                    <p>$<%= (parseFloat(item.price || 0) * (item.quantity || 1)).toFixed(2) %></p>
-                                </div>
-                            </div>
-                        <% }); %>
-                    </div>
-                    
-                    <div class="order-total">
-                        <strong>Total: $<%= parseFloat(order.total_amount || 0).toFixed(2) %></strong>
-                    </div>
-                </div>
-            <% }); %>
-        </div>
-    <% } %>
+                    <% if (idx < arr.length - 1) { %>
+                        <hr style="border: 0; border-top: 2px solid var(--gold); margin: 2em 0;" />
+                    <% } %>
+                <% }); %>
+            </div>
+        <% } %>
+    </div>
 </main>
 <%- include('../partials/footer') %> 
