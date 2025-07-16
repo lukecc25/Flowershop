@@ -47,17 +47,6 @@ async function getChildCategories(parentId) {
 }
  
 /**
- * Mock function for products - returns empty array since we haven't
- * implemented products in the database yet.
- * This prevents the application from crashing while we build database features.
- */
-async function getProductsByCategory(categoryId) {
-    // TODO: Implement products table and functionality in future assignment
-    console.log(`Mock: Getting products for category ID ${categoryId}`);
-    return [];
-}
- 
-/**
  * Gets a random navigation category for the products redirect.
  */
 async function getRandomNavigationCategory() {
@@ -78,6 +67,5 @@ export {
     getNavigationCategories,
     getCategoryBySlug,
     getChildCategories,
-    getProductsByCategory,
     getRandomNavigationCategory
 };

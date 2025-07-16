@@ -1,4 +1,4 @@
-import { getNavigationCategories } from '../models/categories/index.js';
+// import { getNavigationCategories } from '../models/categories/index.js';
 
 // Middleware to add global data to res.locals
 export const addGlobalData = async (req, res, next) => {
@@ -8,14 +8,19 @@ export const addGlobalData = async (req, res, next) => {
     // NODE_ENV for all views
     res.locals.NODE_ENV = process.env.NODE_ENV || 'development';
 
-    // Navigation categories
-    try {
-        const navigationCategories = await getNavigationCategories();
-        res.locals.navigationCategories = navigationCategories;
-    } catch (error) {
-        console.error('Error loading navigation data:', error.message);
-        res.locals.navigationCategories = [];
+    // Navigation categories - skip for now since categories table doesn't exist
+    res.locals.navigationCategories = [];
+
+    // Calculate cart count
+    let cartCount = 0;
+    if (req.session && req.session.cart && req.session.cart.bouquets) {
+        cartCount = req.session.cart.bouquets.reduce((total, bouquet) => {
+            return total + bouquet.items.reduce((bouquetTotal, item) => {
+                return bouquetTotal + (item.quantity || 0);
+            }, 0);
+        }, 0);
     }
+    res.locals.cartCount = cartCount;
 
     next();
 };

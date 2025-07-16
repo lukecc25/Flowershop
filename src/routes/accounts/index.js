@@ -1,5 +1,6 @@
 import express from 'express';
 import { createUser, authenticateUser, emailExists } from '../../models/accounts/index.js';
+import db from '../../models/db.js';
 const router = express.Router();
 
 /**
@@ -7,7 +8,7 @@ const router = express.Router();
  */
 router.get('/login', (req, res) => {
     if (req.session.isLoggedIn) {
-        return res.redirect('/accounts/dashboard');
+        return res.redirect('/accounts/account');
     }
 
     res.render('accounts/login', {
@@ -30,7 +31,7 @@ router.post('/login', async (req, res) => {
         const user = await authenticateUser(email, password);
 
         if (!user) {
-            req.flash('error', 'Invalid email or password');
+            req.flash('error', 'The email or password is not correct');
             return res.render('accounts/login', { title: 'Login' });
         }
 
@@ -39,7 +40,7 @@ router.post('/login', async (req, res) => {
         req.session.loginTime = new Date();
 
         req.flash('success', `Welcome back! You have successfully logged in.`);
-        res.redirect('/accounts/dashboard');
+        res.redirect('/accounts/account');
     } catch (error) {
         console.error('Login error:', error);
         req.flash('error', 'An error occurred during login. Please try again.');
@@ -52,7 +53,7 @@ router.post('/login', async (req, res) => {
  */
 router.get('/register', (req, res) => {
     if (req.session.isLoggedIn) {
-        return res.redirect('/accounts/dashboard');
+        return res.redirect('/accounts/account');
     }
 
     res.render('accounts/register', {
@@ -105,18 +106,32 @@ router.post('/register', async (req, res) => {
 });
 
 /**
- * Display the user dashboard (protected route)
+ * Display the combined account page (protected route)
  */
-router.get('/dashboard', (req, res) => {
+router.get('/account', async (req, res) => {
     if (!req.session.isLoggedIn) {
-        req.flash('error', 'Please log in to access the dashboard');
+        req.flash('error', 'Please log in to access your account');
         return res.redirect('/accounts/login');
     }
-
-    res.render('accounts/dashboard', {
-        title: 'Account Dashboard',
-        user: req.session.user,
-        loginTime: req.session.loginTime
+    const user = req.session.user;
+    const loginTime = req.session.loginTime;
+    const isAdmin = user && (
+        (user.role_id === 3) ||
+        user.isAdmin ||
+        (user.email && user.email.toLowerCase().includes('admin'))
+    );
+    let flowers = [];
+    if (isAdmin) {
+        // Get all flowers for admin
+        const { getAllFlowers } = await import('../../models/flowers/index.js');
+        flowers = await getAllFlowers();
+    }
+    res.render('accounts/account', {
+        title: 'My Account',
+        user,
+        loginTime,
+        isAdmin,
+        flowers
     });
 });
 
@@ -130,7 +145,7 @@ router.post('/logout', (req, res) => {
         if (err) {
             console.error('Error destroying session:', err);
             req.flash('error', 'Logout failed. Please try again.');
-            return res.redirect('/accounts/dashboard');
+            return res.redirect('/accounts/account');
         }
  
         // Clear the session cookie
@@ -140,5 +155,33 @@ router.post('/logout', (req, res) => {
         req.flash('success', `Goodbye! You have been successfully logged out.`);
         res.redirect('/');
     });
+});
+
+/**
+ * Delete account route
+ */
+router.post('/delete', async (req, res) => {
+    if (!req.session.isLoggedIn || !req.session.user) {
+        req.flash('error', 'You must be logged in to delete your account.');
+        return res.redirect('/accounts/login');
+    }
+    try {
+        const userId = req.session.user.id;
+        // Delete the user
+        await db.query('DELETE FROM users WHERE id = $1', [userId]);
+        // Destroy session
+        req.session.destroy((err) => {
+            if (err) {
+                console.error('Error destroying session after account deletion:', err);
+            }
+            res.clearCookie('sessionId');
+            req.flash('success', 'Your account has been deleted.');
+            res.redirect('/');
+        });
+    } catch (error) {
+        console.error('Error deleting account:', error);
+        req.flash('error', 'An error occurred while deleting your account.');
+        res.redirect('/accounts/account');
+    }
 });
 export default router;

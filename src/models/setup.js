@@ -3,18 +3,66 @@ import db from './db.js';
 const verbose = process.env.NODE_ENV === 'development';
 
 /**
- * SQL to drop the flowers table if it exists
+ * SQL to create the roles table
  */
-const dropFlowersTable = `
-    DROP TABLE IF EXISTS flowers CASCADE;
+const createRolesTable = `
+    CREATE TABLE IF NOT EXISTS roles (
+        id SERIAL PRIMARY KEY,
+        role_name VARCHAR(50) NOT NULL UNIQUE,
+        description TEXT
+    );
 `;
 
 /**
- * SQL to create the flowers table
+ * SQL to create the users table
+ */
+const createUsersTable = `
+    CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        role_id INTEGER NOT NULL DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (role_id) REFERENCES roles(id)
+    );
+`;
+
+/**
+ * SQL to create the orders table
+ */
+const createOrdersTable = `
+    CREATE TABLE IF NOT EXISTS orders (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER,
+        total_amount DECIMAL(10,2) NOT NULL,
+        order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        status VARCHAR(50) DEFAULT 'pending',
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+    );
+`;
+
+/**
+ * SQL to create the order_items table (now references flower_id)
+ */
+const createOrderItemsTable = `
+    CREATE TABLE IF NOT EXISTS order_items (
+        id SERIAL PRIMARY KEY,
+        order_id INTEGER NOT NULL,
+        flower_id INTEGER NOT NULL,
+        quantity INTEGER NOT NULL DEFAULT 1,
+        price_at_time DECIMAL(10,2) NOT NULL,
+        FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+        FOREIGN KEY (flower_id) REFERENCES flowers(flower_id) ON DELETE CASCADE
+    );
+`;
+// NOTE: If you are running this on an existing database, a migration is required to rename product_id to flower_id in the flowers table and update all foreign keys referencing it.
+
+/**
+ * SQL to create the flowers table (existing)
  */
 const createFlowersTable = `
     CREATE TABLE IF NOT EXISTS flowers (
-        product_id INTEGER PRIMARY KEY,
+        flower_id INTEGER PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         category VARCHAR(100) NOT NULL,
         price DECIMAL(10,2) NOT NULL,
@@ -23,7 +71,25 @@ const createFlowersTable = `
 `;
 
 /**
- * Flower data you provided
+ * Sample roles data
+ */
+const sampleRoles = [
+    { id: 1, role_name: 'guest', description: 'Non-registered users' },
+    { id: 2, role_name: 'user', description: 'Registered users' },
+    { id: 3, role_name: 'admin', description: 'Administrators' }
+];
+
+/**
+ * Sample admin user
+ */
+const adminUser = {
+    email: 'admin@flowershop.com',
+    password: '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/RK.s5wK6i', // 'admin123'
+    role_id: 3
+};
+
+/**
+ * Flower data (existing)
  */
 const sampleFlowers = [
     {
@@ -99,6 +165,24 @@ const sampleFlowers = [
 ];
 
 /**
+ * SQL to insert roles
+ */
+const insertRoles = `
+    INSERT INTO roles (id, role_name, description)
+    VALUES ($1, $2, $3)
+    ON CONFLICT (id) DO NOTHING;
+`;
+
+/**
+ * SQL to insert admin user
+ */
+const insertAdminUser = `
+    INSERT INTO users (email, password, role_id)
+    VALUES ($1, $2, $3)
+    ON CONFLICT (email) DO NOTHING;
+`;
+
+/**
  * SQL to insert flower records
  */
 const insertSampleFlowers = `
@@ -112,11 +196,28 @@ const insertSampleFlowers = `
  */
 const setupDatabase = async () => {
     try {
-        if (verbose) console.log('Dropping flowers table if it exists...');
-        await db.query(dropFlowersTable);
+        if (verbose) console.log('Creating roles table...');
+        await db.query(createRolesTable);
+
+        if (verbose) console.log('Creating users table...');
+        await db.query(createUsersTable);
+
+        if (verbose) console.log('Creating orders table...');
+        await db.query(createOrdersTable);
 
         if (verbose) console.log('Creating flowers table...');
         await db.query(createFlowersTable);
+
+        if (verbose) console.log('Creating order_items table...');
+        await db.query(createOrderItemsTable);
+
+        if (verbose) console.log('Inserting roles...');
+        for (const role of sampleRoles) {
+            await db.query(insertRoles, [role.id, role.role_name, role.description]);
+        }
+
+        if (verbose) console.log('Inserting admin user...');
+        await db.query(insertAdminUser, [adminUser.email, adminUser.password, adminUser.role_id]);
 
         if (verbose) console.log('Inserting flower data...');
         for (const flower of sampleFlowers) {
@@ -129,10 +230,10 @@ const setupDatabase = async () => {
             ]);
         }
 
-        if (verbose) console.log('Flower table setup complete!');
+        if (verbose) console.log('Database setup complete!');
         return true;
     } catch (error) {
-        console.error('Error setting up flower table:', error.message);
+        console.error('Error setting up database:', error.message);
         throw error;
     }
 };

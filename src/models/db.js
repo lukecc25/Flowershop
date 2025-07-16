@@ -12,7 +12,7 @@ import { Pool } from 'pg';
  * postgresql://username:password@host:port/database
  */
 const pool = new Pool({
-    connectionString: process.env.DB_URL,
+    connectionString: process.env.DB_URL || 'postgresql://postgres:password@localhost:5432/flowershop',
     ssl: false // Set to true if your database requires SSL connections
 });
  

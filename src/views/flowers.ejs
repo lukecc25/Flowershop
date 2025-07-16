@@ -3,8 +3,13 @@
 <main>
     <h1>Our Beautiful Flowers</h1>
     
+    <!-- Flash message container -->
+    <div id="flash-message" style="display: none; position: fixed; top: 20px; right: 20px; background: #4CAF50; color: white; padding: 15px 20px; border-radius: 5px; z-index: 1000; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+        <span id="flash-text"></span>
+    </div>
+    
     <% if (flowers && flowers.length > 0) { %>
-        <div class="flowers-grid">
+        <div class="flowers-container">
             <% flowers.forEach(flower => { %>
                 <div class="flower-card">
                     <div class="flower-image">
@@ -14,6 +19,15 @@
                         <h3 class="flower-name"><%= flower.name %></h3>
                         <p class="flower-category"><%= flower.category %></p>
                         <p class="flower-price">$<%= parseFloat(flower.price).toFixed(2) %></p>
+                        <% if (flower.description) { %>
+                            <p class="flower-description"><%= flower.description %></p>
+                        <% } %>
+                        <form action="/cart/add" method="POST" class="add-to-cart-form" onsubmit="return addToCart(event, '<%= flower.name %>')">
+                            <input type="hidden" name="flowerId" value="<%= flower.product_id %>">
+                            <input type="hidden" name="flowerType" value="flower">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn-add-to-cart">Add to Cart</button>
+                        </form>
                     </div>
                 </div>
             <% }); %>
@@ -22,5 +36,94 @@
         <p class="no-flowers">No flowers available at the moment.</p>
     <% } %>
 </main>
+
+<script>
+function addToCart(event, itemName) {
+    event.preventDefault();
+    
+    // Get the form data
+    const form = event.target;
+    const formData = new FormData(form);
+    
+    // Convert FormData to JSON object
+    const data = {};
+    formData.forEach((value, key) => {
+        data[key] = value;
+    });
+    
+    // Send the request as JSON
+    fetch('/cart/add', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Network response was not ok');
+        }
+    })
+    .then(data => {
+        if (data.success) {
+            // Show flash message
+            showFlashMessage(data.message);
+            
+            // Add bounce animation to cart icon
+            const cartIcon = document.querySelector('.cart svg');
+            if (cartIcon) {
+                cartIcon.classList.add('bounce');
+                setTimeout(() => {
+                    cartIcon.classList.remove('bounce');
+                }, 500);
+            }
+            
+            // Update cart count with the returned count
+            const cartCountElement = document.getElementById('cart-count');
+            if (cartCountElement && data.cartCount > 0) {
+                cartCountElement.textContent = data.cartCount;
+                cartCountElement.style.display = 'flex';
+            } else if (cartCountElement && data.cartCount === 0) {
+                cartCountElement.textContent = '';
+                cartCountElement.style.display = 'none';
+            }
+        } else {
+            showFlashMessage(data.error || 'Error adding item to cart', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showFlashMessage('Error adding item to cart', 'error');
+    });
+    
+    return false;
+}
+
+function showFlashMessage(message, type = 'success') {
+    const flashContainer = document.getElementById('flash-message');
+    const flashText = document.getElementById('flash-text');
+    
+    // Set message and styling
+    flashText.textContent = message;
+    
+    if (type === 'error') {
+        flashContainer.style.background = '#f44336';
+    } else {
+        flashContainer.style.background = '#4CAF50';
+    }
+    
+    // Show the message
+    flashContainer.style.display = 'block';
+    
+    // Hide after 2 seconds
+    setTimeout(() => {
+        flashContainer.style.display = 'none';
+    }, 2000);
+}
+
+
+</script>
 
 <%- include('partials/footer') %> 

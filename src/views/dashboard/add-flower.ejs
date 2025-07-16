@@ -1,0 +1,73 @@
+<%- include('../partials/header') %>
+<main>
+    <h1>Add New Flower</h1>
+ 
+    <% if (errors && errors.length > 0) { %>
+        <div class="error-messages">
+            <h3>Please correct the following errors:</h3>
+            <ul>
+                <% errors.forEach(error => { %>
+                    <li><%= error %></li>
+                <% }); %>
+            </ul>
+        </div>
+    <% } %>
+ 
+    <form action="/dashboard/add-flower" method="POST" class="flower-form">
+        <div class="form-group">
+            <label for="name">Flower Name:</label>
+            <input 
+                type="text" 
+                id="name" 
+                name="name" 
+                value="<%= formData.name || '' %>"
+                required 
+                minlength="2" 
+                maxlength="255"
+            >
+        </div>
+ 
+        <div class="form-group">
+            <label for="category">Category:</label>
+            <select id="category" name="category" required>
+                <option value="">Select a category</option>
+                <option value="Shrubs" <%= formData.category === 'Shrubs' ? 'selected' : '' %>>Shrubs</option>
+                <option value="Container Plants" <%= formData.category === 'Container Plants' ? 'selected' : '' %>>Container Plants</option>
+                <option value="Herbaceous Perennials" <%= formData.category === 'Herbaceous Perennials' ? 'selected' : '' %>>Herbaceous Perennials</option>
+                <option value="Annuals" <%= formData.category === 'Annuals' ? 'selected' : '' %>>Annuals</option>
+                <option value="Bulbs" <%= formData.category === 'Bulbs' ? 'selected' : '' %>>Bulbs</option>
+            </select>
+        </div>
+ 
+        <div class="form-group">
+            <label for="price">Price:</label>
+            <input 
+                type="number" 
+                id="price" 
+                name="price" 
+                value="<%= formData.price || '' %>"
+                step="0.01" 
+                min="0.01" 
+                required
+            >
+        </div>
+ 
+        <div class="form-group">
+            <label for="photo">Photo URL:</label>
+            <input 
+                type="url" 
+                id="photo" 
+                name="photo" 
+                value="<%= formData.photo || '' %>"
+                required
+                placeholder="https://example.com/flower-image.jpg"
+            >
+        </div>
+ 
+        <div class="form-actions">
+            <button type="submit" class="btn-submit">Add Flower</button>
+            <a href="/dashboard" class="btn-cancel">Cancel</a>
+        </div>
+    </form>
+</main>
+<%- include('../partials/footer') %> 

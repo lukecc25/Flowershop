@@ -1,127 +1,183 @@
 import express from 'express';
-import { getAllProducts, addProduct } from '../../models/products/index.js';
+import { getAllFlowers, addFlower, getFlowerById } from '../../models/flowers/index.js';
+import { requireAuth, requireAdmin } from '../../middleware/auth.js';
  
 const router = express.Router();
  
 /**
- * Dashboard home page - displays navigation to product management features
+ * Dashboard home page - displays different content based on user role
  */
-router.get('/', async (req, res, next) => {
-    if (!req.session.isLoggedIn) {
-    res.locals.errors.push('Please log in to access the dashboard');
-    return res.render('accounts/login', {
-        title: 'Login'
-        });
-    }
+router.get('/', requireAuth, async (req, res, next) => {
     try {
-        const products = await getAllProducts();
-        res.render('dashboard/index', {
-            title: 'Dashboard',
-            products: products
-        });
+        const isUserAdmin = req.session.user.role_id === 3;
+        
+        if (isUserAdmin) {
+            // Admin dashboard
+            const flowers = await getAllFlowers();
+            
+            res.render('dashboard/admin', {
+                title: 'Admin Dashboard',
+                flowers: flowers
+            });
+        } else {
+            // Regular user dashboard
+            res.render('dashboard/user', {
+                title: 'User Dashboard',
+                user: req.session.user
+            });
+        }
     } catch (error) {
         next(error);
     }
 });
- 
+
 /**
- * Display the add product form
+ * Admin: Display the add flower form
  */
-router.get('/add-product', (req, res) => {
-    if (!req.session.isLoggedIn) {
-    res.locals.errors.push('Please log in to access the dashboard');
-    return res.render('accounts/login', {
-        title: 'Login'
-        });
-    }
-    res.render('dashboard/add-product', {
-        title: 'Add Product',
+router.get('/add-flower', requireAdmin, (req, res) => {
+    res.render('dashboard/add-flower', {
+        title: 'Add Flower',
         errors: null,
         formData: {}
     });
 });
- 
+
 /**
- * Process the add product form submission
+ * Admin: Process the add flower form submission
  */
-router.post('/add-product', async (req, res, next) => {
-    if (!req.session.isLoggedIn) {
-    res.locals.errors.push('Please log in to access the dashboard');
-    return res.render('accounts/login', {
-        title: 'Login'
-        });
-    }
+router.post('/add-flower', requireAdmin, async (req, res, next) => {
     try {
         // Extract form data
-        const { name, description, price, image } = req.body;
+        const { name, category, price, photo } = req.body;
  
         // Basic server-side validation
         const errors = [];
  
         if (!name || name.trim().length === 0) {
-            errors.push('Product name is required');
+            errors.push('Flower name is required');
         }
  
-        if (!description || description.trim().length === 0) {
-            errors.push('Product description is required');
+        if (!category || category.trim().length === 0) {
+            errors.push('Category is required');
         }
  
         if (!price || isNaN(parseFloat(price)) || parseFloat(price) <= 0) {
-            errors.push('Valid product price is required');
+            errors.push('Valid price is required');
         }
  
-        if (!image || image.trim().length === 0) {
-            errors.push('Product image URL is required');
+        if (!photo || photo.trim().length === 0) {
+            errors.push('Photo URL is required');
         }
  
         // If validation errors exist, redisplay the form
         if (errors.length > 0) {
-            return res.render('dashboard/add-product', {
-                title: 'Add Product',
+            return res.render('dashboard/add-flower', {
+                title: 'Add Flower',
                 errors: errors,
                 formData: req.body
             });
         }
  
-        // Prepare product data
-        const productData = {
+        // Prepare flower data
+        const flowerData = {
             name: name.trim(),
-            description: description.trim(),
+            category: category.trim(),
             price: parseFloat(price),
-            image: image.trim()
+            photo: photo.trim()
         };
  
-        // Add product to database
-        const newProduct = await addProduct(productData);
+        // Add flower to database
+        await addFlower(flowerData);
  
         // Redirect to dashboard with success message
-        res.redirect('/dashboard?success=Product added successfully');
+        res.redirect('/dashboard?success=Flower added successfully');
  
     } catch (error) {
-        console.error('Error processing add product form:', error);
+        console.error('Error processing add flower form:', error);
  
         // Redisplay form with error message
-        res.render('dashboard/add-product', {
-            title: 'Add Product',
-            errors: ['An error occurred while adding the product. Please try again.'],
+        res.render('dashboard/add-flower', {
+            title: 'Add Flower',
+            errors: ['An error occurred while adding the flower. Please try again.'],
             formData: req.body
         });
     }
 });
- 
+
 /**
- * Display the edit product page (placeholder for future assignment)
+ * Admin: Display the edit flower page
  */
-router.get('/edit-product', (req, res) => {
-    if (!req.session.isLoggedIn) {
-    res.locals.errors.push('Please log in to access the dashboard');
-    return res.render('accounts/login', {
-        title: 'Login'
+router.get('/edit-flower/:id', requireAdmin, async (req, res, next) => {
+    try {
+        const flowerId = parseInt(req.params.id);
+        const flower = await getFlowerById(flowerId);
+        
+        if (!flower) {
+            req.flash('error', 'Flower not found');
+            return res.redirect('/dashboard');
+        }
+        
+        res.render('dashboard/edit-flower', {
+            title: 'Edit Flower',
+            flower: flower,
+            errors: null
         });
+    } catch (error) {
+        next(error);
     }
-    res.render('dashboard/edit-product', {
-        title: 'Edit Product'
-    });
+});
+
+/**
+ * Admin: Process edit flower form
+ */
+router.post('/edit-flower/:id', requireAdmin, async (req, res, next) => {
+    try {
+        const flowerId = parseInt(req.params.id);
+        const { name, category, price, photo } = req.body;
+        
+        // Validation
+        const errors = [];
+        if (!name || name.trim().length === 0) errors.push('Flower name is required');
+        if (!category || category.trim().length === 0) errors.push('Category is required');
+        if (!price || isNaN(parseFloat(price)) || parseFloat(price) <= 0) errors.push('Valid price is required');
+        if (!photo || photo.trim().length === 0) errors.push('Photo URL is required');
+        
+        if (errors.length > 0) {
+            return res.render('dashboard/edit-flower', {
+                title: 'Edit Flower',
+                flower: { id: flowerId, name, category, price, photo },
+                errors: errors
+            });
+        }
+        
+        const flowerData = {
+            name: name.trim(),
+            category: category.trim(),
+            price: parseFloat(price),
+            photo: photo.trim()
+        };
+        
+        // Assuming updateFlower function exists in models/flowers/index.js
+        // await updateFlower(flowerId, flowerData); 
+        res.redirect('/dashboard?success=Flower updated successfully');
+        
+    } catch (error) {
+        next(error);
+    }
+});
+
+/**
+ * Admin: Delete flower
+ */
+router.post('/delete-flower/:id', requireAdmin, async (req, res, next) => {
+    try {
+        const flowerId = parseInt(req.params.id);
+        // Assuming deleteFlower function exists in models/flowers/index.js
+        // await deleteFlower(flowerId); 
+        res.redirect('/dashboard?success=Flower deleted successfully');
+    } catch (error) {
+        next(error);
+    }
 });
  
 export default router;

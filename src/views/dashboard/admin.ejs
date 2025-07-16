@@ -1,0 +1,36 @@
+<%- include('../partials/header') %>
+<main>
+    <h1>Admin Dashboard</h1>
+
+    <%- include('../partials/flash') %>
+
+    <div class="admin-sections">
+        <!-- Flowers Management -->
+        <section class="admin-section">
+            <h2>Flowers Management</h2>
+            <div class="admin-actions">
+                <a href="/dashboard/add-flower" class="btn">Add New Flower</a>
+            </div>
+            
+            <% if (flowers.length === 0) { %>
+                <p>No flowers added yet.</p>
+            <% } else { %>
+                <div class="flowers-grid">
+                    <% flowers.forEach(flower => { %>
+                        <div class="flower-card">
+                            <div class="flower-image">
+                                <img src="<%= flower.photo %>" alt="<%= flower.name %>">
+                            </div>
+                            <div class="flower-info">
+                                <h3><%= flower.name %></h3>
+                                <p class="category"><%= flower.category %></p>
+                                <p class="price">$<%= flower.price %></p>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } %>
+        </section>
+    </div>
+</main>
+<%- include('../partials/footer') %> 

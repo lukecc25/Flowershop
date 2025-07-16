@@ -1,0 +1,77 @@
+<%- include('../partials/header') %>
+<main>
+    <h1>User Dashboard</h1>
+
+    <%- include('../partials/flash') %>
+
+    <div class="user-welcome">
+        <h2>Welcome back, <%= user.email %>!</h2>
+        <p>Role: <%= user.role_name %></p>
+    </div>
+
+    <div class="dashboard-content">
+        <section class="account-info">
+            <h3>Account Information</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Email:</label>
+                    <span><%= user.email %></span>
+                </div>
+                <div class="info-item">
+                    <label>Member Since:</label>
+                    <span><%= new Date(user.created_at).toLocaleDateString() %></span>
+                </div>
+                <div class="info-item">
+                    <label>Account Status:</label>
+                    <span class="status-active">Active</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="quick-actions">
+            <h3>Quick Actions</h3>
+            <div class="actions-grid">
+                <a href="/orders/history" class="action-card">
+                    <div class="action-icon">📋</div>
+                    <h4>Order History</h4>
+                    <p>View your past orders</p>
+                </a>
+                <a href="/flowers" class="action-card">
+                    <div class="action-icon">🌺</div>
+                    <h4>Shop Flowers</h4>
+                    <p>Browse our flower collection</p>
+                </a>
+                <a href="/cart" class="action-card">
+                    <div class="action-icon">🛒</div>
+                    <h4>Shopping Cart</h4>
+                    <p>View your cart items</p>
+                </a>
+                <a href="/accounts/dashboard" class="action-card">
+                    <div class="action-icon">👤</div>
+                    <h4>Account Settings</h4>
+                    <p>Manage your account</p>
+                </a>
+            </div>
+            <form action="/accounts/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');" style="margin-top:2rem; text-align:center;">
+                <button type="submit" class="btn-delete-account" style="background:#b22222;color:white;padding:0.75em 2em;border:none;border-radius:8px;cursor:pointer;">Delete My Account</button>
+            </form>
+        </section>
+
+        <section class="recent-activity">
+            <h3>Recent Activity</h3>
+            <div class="activity-list">
+                <div class="activity-item">
+                    <span class="activity-icon">✓</span>
+                    <span class="activity-text">Account logged in successfully</span>
+                    <span class="activity-time">Just now</span>
+                </div>
+                <div class="activity-item">
+                    <span class="activity-icon">📧</span>
+                    <span class="activity-text">Email verified</span>
+                    <span class="activity-time"><%= new Date(user.created_at).toLocaleDateString() %></span>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+<%- include('../partials/footer') %> 

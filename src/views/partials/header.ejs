@@ -16,6 +16,43 @@
             };
         </script>
     <% } %>
+    <script>
+        // Function to update cart count
+        function updateCartCount() {
+            fetch('/cart/count')
+            .then(response => response.json())
+            .then(data => {
+                const cartCountElement = document.getElementById('cart-count');
+                if (cartCountElement) {
+                    if (data.count > 0) {
+                        cartCountElement.textContent = data.count;
+                        cartCountElement.classList.remove('hide');
+                        cartCountElement.classList.add('show');
+                    } else {
+                        cartCountElement.textContent = '';
+                        cartCountElement.classList.remove('show');
+                        cartCountElement.classList.add('hide');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error updating cart count:', error);
+            });
+        }
+
+        // Update cart count when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartCount();
+        });
+
+        // Update cart count when cart icon is clicked
+        document.addEventListener('click', function(event) {
+            if (event.target.closest('.cart a')) {
+                // Update cart count before navigation
+                updateCartCount();
+            }
+        });
+    </script>
 </head>
 <body>
     <header>
@@ -25,10 +62,13 @@
                 <li><a href="/">Home</a></li>
                 <li><a href="/about">About</a></li>
                 <li><a href="/flowers">Flowers</a></li>
-                <li><a href="/dashboard">Dashboard</a></li>
 
-                <% if (typeof req !== 'undefined' && req.session && req.session.isLoggedIn) { %>
-                    <li><a href="/accounts/dashboard">My Account</a></li>
+                <% if (typeof isLoggedIn !== 'undefined' && isLoggedIn) { %>
+                    <% if (typeof isAdmin !== 'undefined' && isAdmin) { %>
+                        <li><a href="/dashboard">Admin Dashboard</a></li>
+                    <% } %>
+                    <li><a href="/accounts/account">My Account</a></li>
+                    <li><a href="/orders/history">Order History</a></li>
                     <li>
                         <form action="/accounts/logout" method="POST" style="display: inline;">
                             <button type="submit" class="nav-logout-btn">Logout</button>
@@ -39,5 +79,37 @@
                     <li><a href="/accounts/register">Register</a></li>
                 <% } %>
             </ul>
+            <div class="cart">
+                <a href="/cart">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="50" height="50">
+                        <!-- Pot base (filled, with rim) -->
+                        <ellipse cx="50" cy="80" rx="28" ry="10" stroke="inherit" stroke-width="2"/>
+                        <rect x="25" y="55" width="50" height="25" rx="12" stroke="inherit" stroke-width="2"/>
+                        <ellipse cx="50" cy="55" rx="25" ry="8" fill="white" fill-opacity="0.7" stroke="inherit" stroke-width="2"/>
+                        <!-- Pot rim (open, with gaps) -->
+                        <path d="M28 55 Q50 65 72 55" fill="none" stroke="inherit" stroke-width="2.5" stroke-linecap="round"/>
+                        <path d="M35 53 Q50 60 65 53" fill="none" stroke="inherit" stroke-width="1.5" stroke-linecap="round"/>
+                        <!-- Soil (open ellipse) -->
+                        <ellipse cx="50" cy="55" rx="18" ry="5" fill="none" stroke="inherit" stroke-width="1.5" stroke-dasharray="6 6"/>
+                        <!-- Main stem -->
+                        <path d="M50 55 Q52 40 50 25" fill="none" stroke="inherit" stroke-width="2.5"/>
+                        <!-- Left leaf -->
+                        <path d="M50 40 Q40 35 38 25 Q48 30 50 40" fill="none" stroke="inherit" stroke-width="2"/>
+                        <!-- Right leaf -->
+                        <path d="M50 40 Q60 35 62 25 Q52 30 50 40" fill="none" stroke="inherit" stroke-width="2"/>
+                        <!-- Center leaf -->
+                        <path d="M50 32 Q48 20 55 18 Q54 25 50 32" fill="none" stroke="inherit" stroke-width="1.5"/>
+                        <!-- Buds (all, spaced) -->
+                        <circle cx="50" cy="20" r="3"/>
+                        <circle cx="44" cy="28" r="2"/>
+                        <circle cx="56" cy="28" r="2"/>
+                    </svg>
+                    <sup
+                      id="cart-count"
+                      class="cart-count<%= typeof cartCount !== 'undefined' && cartCount > 0 ? ' show' : ' hide' %>">
+                      <%= typeof cartCount !== 'undefined' && cartCount > 0 ? cartCount : '' %>
+                    </sup>
+                </a>
+            </div>
         </nav>
     </header>

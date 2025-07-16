@@ -4,7 +4,7 @@ import db from '../../models/db.js';
 const router = Router();
 
 /**
- * /products - show all flowers or filter by category
+ * /flowers - show all flowers or filter by category
  */
 router.get('/', async (req, res, next) => {
   try {
@@ -27,7 +27,7 @@ router.get('/', async (req, res, next) => {
     const categoriesResult = await db.query('SELECT DISTINCT category FROM flowers ORDER BY category');
     const categories = categoriesResult.rows.map(row => row.category);
     
-    res.render('products', {
+    res.render('flowers', {
       title: category ? `Flowers - ${category}` : 'All Flowers',
       display,
       flowers,
@@ -41,7 +41,7 @@ router.get('/', async (req, res, next) => {
 });
 
 /**
- * /products/:category - show flowers filtered by category
+ * /flowers/:category - show flowers filtered by category
  */
 router.get('/:category', async (req, res, next) => {
   try {
@@ -61,7 +61,7 @@ router.get('/:category', async (req, res, next) => {
     const categoriesResult = await db.query('SELECT DISTINCT category FROM flowers ORDER BY category');
     const categories = categoriesResult.rows.map(row => row.category);
 
-    res.render('products', {
+    res.render('flowers', {
       title: `Flowers - ${category}`,
       display,
       flowers,
@@ -75,7 +75,7 @@ router.get('/:category', async (req, res, next) => {
 });
 
 /**
- * /products/:category/:id - show individual flower details
+ * /flowers/:category/:id - show individual flower details
  */
 router.get('/:category/:id', async (req, res, next) => {
   try {

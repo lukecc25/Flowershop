@@ -10,10 +10,11 @@ import pgSession from 'connect-pg-simple';
 
 // Import route handlers from their new locations
 import indexRoutes from './src/routes/index.js';
-import exploreRoutes from './src/routes/products/index.js';
 import testRoutes from './src/routes/test.js';
 import accountRoutes from './src/routes/accounts/index.js';
 import flowersRoutes from './src/routes/flowers.js';
+import cartRoutes from './src/routes/cart.js';
+import ordersRoutes from './src/routes/orders.js';
 
 // Import global middleware
 import {
@@ -22,6 +23,7 @@ import {
     poweredByHeader,
     measureProcessingTime,
 } from './src/middleware/index.js';
+import { addUserInfo } from './src/middleware/auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -80,14 +82,18 @@ app.use(session({
 // Flash message middleware - after session, before routes
 app.use(flashMessages);
 
+// Add user info middleware - after session and flash
+app.use(addUserInfo);
+
 /**
  * Routes
  */
 app.use('/', indexRoutes);
-app.use('/products', exploreRoutes);
+app.use('/flowers', flowersRoutes);
 app.use('/test', testRoutes);
 app.use('/accounts', accountRoutes);
-app.use('/flowers', flowersRoutes);
+app.use('/cart', cartRoutes);
+app.use('/orders', ordersRoutes);
 app.use('/dashboard', dashboardRoutes);
 
 // Manual error test route
@@ -95,6 +101,23 @@ app.get('/manual-error', (req, res, next) => {
     const err = new Error('This is a manually triggered error');
     err.status = 500;
     next(err);
+});
+
+// Database test route
+app.get('/test-db', async (req, res) => {
+    try {
+        const result = await db.query('SELECT NOW() as current_time');
+        res.json({ 
+            success: true, 
+            time: result.rows[0].current_time,
+            message: 'Database connection working'
+        });
+    } catch (error) {
+        res.status(500).json({ 
+            success: false, 
+            error: error.message 
+        });
+    }
 });
 
 /**
@@ -109,6 +132,9 @@ app.use((req, res, next) => {
         error: 'Sorry, the page you requested does not exist.',
         NODE_ENV,
         PORT,
+        isLoggedIn: res.locals.isLoggedIn || false,
+        isAdmin: res.locals.isAdmin || false,
+        currentUser: res.locals.currentUser || null
     };
     res.render('errors/404', context);
 });
@@ -123,6 +149,9 @@ app.use((err, req, res, next) => {
         stack: NODE_ENV === 'production' ? '' : err.stack,
         NODE_ENV,
         PORT,
+        isLoggedIn: res.locals.isLoggedIn || false,
+        isAdmin: res.locals.isAdmin || false,
+        currentUser: res.locals.currentUser || null
     };
     res.status(status).render(`errors/${status === 404 ? '404' : '500'}`, context);
 });
@@ -152,10 +181,18 @@ if (NODE_ENV.includes('dev')) {
 app.listen(PORT, async () => {
     try {
         await testConnection();
-        await setupDatabase();
+        console.log('Database connection successful');
+        
+        try {
+            await setupDatabase();
+            console.log('Database setup completed successfully');
+        } catch (setupError) {
+            console.error('Database setup failed:', setupError.message);
+            console.log('Server will start without database setup');
+        }
     } catch (error) {
-        console.error('Database setup failed:', error);
-        process.exit(1);
+        console.error('Database connection failed:', error.message);
+        console.log('Server will start without database connection');
     }
     console.log(`Server is running on http://127.0.0.1:${PORT}`);
 });
