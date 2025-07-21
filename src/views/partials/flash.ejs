@@ -1,9 +1,21 @@
-<% if (flash && flash.length > 0) { %>
+<% if (flash && Object.keys(flash).length > 0) { %>
     <div class="flash-messages">
-        <% flash.forEach(message => { %>
-            <div class="flash-message flash-<%= message.type %>">
-                <p><%= message.message %></p>
-            </div>
-        <% }); %>
+        <% Object.entries(flash).forEach(([type, messages]) => {
+            messages.forEach(message => { %>
+                <div class="flash-message flash-<%= type %>">
+                    <p><%= message %></p>
+                </div>
+            <% });
+        }); %>
     </div>
 <% } %>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const flash = document.querySelector('.flash-message, .flash-success, .flash-error');
+    if (flash) {
+        setTimeout(() => {
+            flash.style.display = 'none';
+        }, 4000);
+    }
+});
+</script>

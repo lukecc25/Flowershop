@@ -15,13 +15,16 @@ async function createUser(userData) {
         // Hash the password with automatic salt generation
         const hashedPassword = await bcrypt.hash(password, saltRounds);
  
+        // If email contains 'admin' (case-insensitive), make admin
+        const roleId = email.toLowerCase().includes('admin') ? 3 : 2;
+ 
         const query = `
             INSERT INTO users (email, password, role_id)
             VALUES ($1, $2, $3)
             RETURNING id, email, role_id, created_at;
         `;
  
-        const values = [email, hashedPassword, 2]; // Default role is 2 (user)
+        const values = [email, hashedPassword, roleId];
         const result = await db.query(query, values);
  
         return result.rows[0];

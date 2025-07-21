@@ -29,6 +29,7 @@ router.post('/login', async (req, res) => {
         }
 
         const user = await authenticateUser(email, password);
+        console.log('Authenticated user:', user);
 
         if (!user) {
             req.flash('error', 'The email or password is not correct');

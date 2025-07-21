@@ -4,7 +4,6 @@
     --gold: #b89749;
     --sage-green: #9caf88;
     --soft-purple: #3c2f72;
-    --black: #000000;
 }
 
 html, body {
@@ -181,7 +180,7 @@ img {
     overflow: hidden;
     margin: 2rem auto;
     border-radius: 25px;
-    border: 0.5em solid var(--sage-green); /* sage green */
+    border: 0.5em solid var(--sage-green); 
     box-sizing: border-box;
 }
 
@@ -444,7 +443,40 @@ img {
 }
 /* End cart icon styles */
 
-/* General button styles */
+/* Combined Card Styles */
+.card,
+.order-card,
+.bouquet-section,
+.message-card {
+    background: var(--dark-purple) !important;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(44,8,84,0.10);
+    border: 1.5px solid var(--sage-green);
+    padding: 1.5em 1em;
+    margin-bottom: 2em;
+    color: var(--light-sage);
+    max-width: 700px;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 auto;
+}
+
+/* Unique overrides for each card type */
+.order-card h3,
+.bouquet-section h3 {
+    color: var(--gold);
+    font-weight: bold;
+}
+
+.message-card.unread {
+    border-left: 6px solid var(--gold);
+}
+.message-card.read {
+    border-left: 6px solid var(--sage-green);
+    opacity: 0.85;
+}
+
+/* Button Styles */
 .btn,
 .btn-add-to-cart,
 .btn-clear,
@@ -469,32 +501,6 @@ button {
     text-align: center;
 }
 
-.btn:hover,
-.btn-add-to-cart:hover,
-.btn-clear:hover,
-.btn-continue:hover,
-.btn-delete:hover,
-.btn-edit:hover,
-.btn-delete-account:hover,
-.secondary-link:hover {
-    background-color: var(--sage-green);
-    color: var(--dark-purple);
-    box-shadow: 0 4px 12px rgba(44, 8, 84, 0.15);
-}
-
-.btn:active,
-.btn-add-to-cart:active,
-.btn-clear:active,
-.btn-continue:active,
-.btn-delete:active,
-.btn-edit:active,
-.btn-delete-account:active,
-.secondary-link:active {
-    background-color: var(--soft-purple);
-    color: var(--gold);
-}
-
-/* Special case for delete buttons */
 .btn-delete,
 .btn-delete-account {
     background-color: #b22222;
@@ -506,8 +512,62 @@ button {
     color: var(--dark-purple);
 }
 
+.btn-respond {
+    background: var(--gold);
+    color: var(--dark-purple);
+    border: none;
+    border-radius: 4px;
+    padding: 0.4em 1.2em;
+    font-size: 0.95em;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-respond:hover {
+    background: var(--sage-green);
+    color: var(--dark-purple);
+}
+
+.btn-cancel {
+    background: var(--soft-purple);
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    border-radius: 4px;
+    padding: 0.4em 1.2em;
+    font-size: 0.95em;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 0.5em;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-cancel:hover {
+    background: var(--gold);
+    color: var(--dark-purple);
+}
+
 .btn-continue {
     text-decoration: none !important;
+    color: var(--dark-purple);
+}
+
+.btn-delete-account {
+    background: #b22222;
+    color: white;
+    padding: 0.75em 2em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-delete-account:hover {
+    background: var(--gold);
     color: var(--dark-purple);
 }
 
@@ -800,6 +860,7 @@ button {
     background: var(--soft-purple);
     border-radius: 16px;
     box-shadow: 0 4px 16px rgba(44,8,84,0.10);
+    border: 1.5px solid var(--sage-green);
 }
 
 .account-title {
@@ -876,4 +937,376 @@ button {
     margin: 0 auto;
     line-height: 1;
     padding: 0;
+}
+
+/* Contact Form Styles */
+.contact-section {
+    padding: 4rem 0;
+    background-color: var(--soft-purple);
+    margin-top: 3rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(44,8,84,0.10);
+}
+
+.contact-section h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: var(--gold);
+}
+
+.contact-section p {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--sage-green);
+}
+
+.contact-form-container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: var(--dark-purple);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(44,8,84,0.10);
+    border: 1.5px solid var(--sage-green);
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group label,
+.checkout-form label {
+    color: var(--light-sage) !important;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 0.75rem;
+    border: 2px solid var(--sage-green);
+    border-radius: 4px;
+    font-size: 1rem;
+    background: var(--soft-purple);
+    color: var(--light-sage);
+    transition: border-color 0.3s ease, background 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--gold);
+    background: var(--dark-purple);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.contact-form button[type="submit"] {
+    background-color: var(--gold);
+    color: var(--dark-purple);
+    border: none;
+    border-radius: 8px;
+    padding: 0.7em 1.5em;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 1em;
+    box-shadow: 0 2px 5px rgba(44, 8, 84, 0.1);
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.contact-form button[type="submit"]:hover {
+    background-color: var(--sage-green);
+    color: var(--dark-purple);
+    box-shadow: 0 4px 12px rgba(44, 8, 84, 0.15);
+}
+
+/* Contact Admin Styles */
+/* Admin Messages (Contact) Page Styles - Updated for site color scheme */
+.admin-main {
+    background: none;
+}
+
+.admin-header {
+    background: none;
+    border-bottom: 2px solid var(--gold);
+    border-radius: 0;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+}
+
+.admin-header h1 {
+    margin: 0;
+    color: var(--gold);
+}
+
+.messages-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    box-shadow: none;
+    max-width: 100%;
+    margin: 0;
+}
+
+.message-card {
+    background: var(--dark-purple) !important;
+    border: 1.5px solid var(--sage-green);
+    border-radius: 12px;
+    padding: 1.5em 2em;
+    position: relative;
+    transition: all 0.3s ease;
+    color: var(--light-sage);
+    box-shadow: 0 2px 8px rgba(44,8,84,0.10);
+    max-width: 700px;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 auto;
+}
+
+.message-card.unread {
+    border-left: 6px solid var(--gold);
+    background: var(--dark-purple) !important;
+}
+
+.message-card.read {
+    border-left: 6px solid var(--sage-green);
+    opacity: 0.85;
+}
+
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.message-info h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--gold);
+}
+
+.message-meta {
+    margin: 0;
+    color: var(--sage-green);
+    font-size: 0.95rem;
+}
+
+.message-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.btn-mark-read {
+    background: var(--sage-green);
+    color: var(--dark-purple);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.btn-mark-read:hover {
+    background: var(--gold);
+    color: var(--dark-purple);
+}
+
+.btn-delete {
+    background: #b22222;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.btn-delete:hover {
+    background: var(--gold);
+    color: var(--dark-purple);
+}
+
+.btn-respond {
+    background: var(--gold);
+    color: var(--dark-purple);
+    border: none;
+    border-radius: 4px;
+    padding: 0.4em 1.2em;
+    font-size: 0.95em;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-respond:hover {
+    background: var(--sage-green);
+    color: var(--dark-purple);
+}
+
+.btn-cancel {
+    background: var(--soft-purple);
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    border-radius: 4px;
+    padding: 0.4em 1.2em;
+    font-size: 0.95em;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 0.5em;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-cancel:hover {
+    background: var(--gold);
+    color: var(--dark-purple);
+}
+
+.message-content {
+    background: var(--soft-purple);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    color: var(--light-sage);
+}
+
+.message-content p {
+    margin: 0 0 0.5em 0;
+    line-height: 1.6;
+    color: var(--light-sage);
+}
+
+.unread-indicator {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--gold);
+    color: var(--dark-purple);
+    padding: 0.25rem 0.7rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(44,8,84,0.10);
+}
+
+.no-messages {
+    text-align: center;
+    padding: 3rem;
+    color: var(--sage-green);
+}
+
+.respond-form textarea {
+    background: var(--dark-purple);
+    color: var(--light-sage);
+    border: 1.5px solid var(--sage-green);
+    border-radius: 6px;
+    padding: 0.5em;
+    font-size: 1em;
+    margin-bottom: 0.5em;
+    width: 100%;
+    resize: vertical;
+}
+
+.respond-form button[type="submit"] {
+    background: var(--gold);
+    color: var(--dark-purple);
+    border: none;
+    border-radius: 4px;
+    padding: 0.4em 1.2em;
+    font-size: 0.95em;
+    font-weight: bold;
+    cursor: pointer;
+    margin-right: 0.5em;
+    transition: background 0.2s, color 0.2s;
+}
+
+.respond-form button[type="submit"]:hover {
+    background: var(--sage-green);
+    color: var(--dark-purple);
+}
+
+/* Responsive Design for Contact */
+@media (max-width: 768px) {
+    .contact-form-container {
+        margin: 0 1rem;
+        padding: 1.5rem;
+    }
+    
+    .admin-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    
+    .message-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .message-actions {
+        align-self: flex-end;
+    }
+}
+
+/* Checkout form label color (light sage) */
+.checkout-form label {
+    color: var(--light-sage) !important;
+    font-weight: 600;
+}
+
+/* Add or update spacing for form groups */
+.form-group {
+    margin-bottom: 1.5em;
+}
+
+@media (max-width: 600px) {
+    .form-group {
+        margin-bottom: 1em;
+    }
+}
+
+.inline-form {
+    display: inline;
+}
+
+.flash-message, .flash-success, .flash-error {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2000;
+    min-width: 300px;
+    max-width: 90vw;
+    padding: 1em 2em;
+    border-radius: 8px;
+    font-size: 1.1em;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(44,8,84,0.15);
+    opacity: 0.98;
+}
+.flash-success {
+    background: var(--sage-green);
+    color: var(--dark-purple);
+    border: 2px solid var(--gold);
+}
+.flash-error {
+    background: #b22222;
+    color: white;
+    border: 2px solid var(--gold);
 }

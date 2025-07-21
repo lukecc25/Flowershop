@@ -1,0 +1,65 @@
+<%- include('../partials/header') %>
+
+<main class="admin-main">
+    <div class="account-container">
+        <div class="admin-header">
+            <h1>Contact Messages</h1>
+            <a href="/dashboard" class="btn-secondary">Back to Dashboard</a>
+        </div>
+
+        <% if (messages.length === 0) { %>
+            <div class="no-messages">
+                <p>No contact messages yet.</p>
+            </div>
+        <% } else { %>
+            <div class="messages-container">
+                <% messages.forEach(message => { %>
+                    <div class="message-card <%= message.is_read ? 'read' : 'unread' %>" data-id="<%= message.id %>">
+                        <div class="message-header">
+                            <div class="message-info">
+                                <h3><%= message.subject %></h3>
+                                <p class="message-meta">
+                                    From: <strong><%= message.name %></strong> 
+                                    (<%= message.email %>) 
+                                    on <%= new Date(message.created_at).toLocaleString() %>
+                                </p>
+                            </div>
+                            <div class="message-actions">
+                                <% if (!message.is_read) { %>
+                                    <form action="/contact/admin/read/<%= message.id %>" method="POST" class="inline-form">
+                                        <button type="submit" class="btn-mark-read">Mark Read</button>
+                                    </form>
+                                <% } %>
+                                <form action="/contact/admin/delete/<%= message.id %>" method="POST" class="inline-form">
+                                    <button type="submit" class="btn-delete" onclick="return confirm('Are you sure you want to delete this message?')">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="message-content">
+                            <p><%= message.message.replace(/</g, '&lt;').replace(/>/g, '&gt;') %></p>
+                            <button class="btn-respond" onclick="showRespondForm('<%= message.id %>')" type="button">Respond</button>
+                            <form id="respond-form-<%= message.id %>" class="respond-form" action="#" method="POST" style="display:none; margin-top:1em;">
+                                <textarea name="response" rows="2" placeholder="Type your response here..." required style="width:100%;"></textarea>
+                                <button type="submit" class="btn">Send Response</button>
+                                <button type="button" class="btn-cancel" onclick="hideRespondForm('<%= message.id %>')">Cancel</button>
+                            </form>
+                        </div>
+                        <% if (!message.is_read) { %>
+                            <div class="unread-indicator">New</div>
+                        <% } %>
+                    </div>
+                <% }); %>
+            </div>
+        <% } %>
+    </div>
+</main>
+
+<%- include('../partials/footer') %> 
+<script>
+function showRespondForm(id) {
+    document.getElementById('respond-form-' + id).style.display = 'block';
+}
+function hideRespondForm(id) {
+    document.getElementById('respond-form-' + id).style.display = 'none';
+}
+</script> 

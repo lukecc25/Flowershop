@@ -56,6 +56,22 @@ const createOrderItemsTable = `
         FOREIGN KEY (flower_id) REFERENCES flowers(flower_id) ON DELETE CASCADE
     );
 `;
+
+/**
+ * SQL to create the contact_messages table
+ */
+const createContactMessagesTable = `
+    CREATE TABLE IF NOT EXISTS contact_messages (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        subject VARCHAR(255) NOT NULL,
+        message TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        is_read BOOLEAN DEFAULT FALSE
+    );
+`;
+
 // NOTE: If you are running this on an existing database, a migration is required to rename product_id to flower_id in the flowers table and update all foreign keys referencing it.
 
 /**
@@ -63,7 +79,7 @@ const createOrderItemsTable = `
  */
 const createFlowersTable = `
     CREATE TABLE IF NOT EXISTS flowers (
-        flower_id INTEGER PRIMARY KEY,
+        flower_id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         category VARCHAR(100) NOT NULL,
         price DECIMAL(10,2) NOT NULL,
@@ -211,6 +227,9 @@ const setupDatabase = async () => {
 
         if (verbose) console.log('Creating order_items table...');
         await db.query(createOrderItemsTable);
+
+        if (verbose) console.log('Creating contact_messages table...');
+        await db.query(createContactMessagesTable);
 
         if (verbose) console.log('Inserting roles...');
         for (const role of sampleRoles) {

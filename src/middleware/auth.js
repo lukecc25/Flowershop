@@ -41,7 +41,7 @@ export const addUserInfo = (req, res, next) => {
     // Check if session exists and user is logged in
     if (req.session && req.session.isLoggedIn && req.session.user) {
         res.locals.currentUser = req.session.user;
-        res.locals.isAdmin = req.session.user.role_id === 3;
+        res.locals.isAdmin = req.session.user.role_id === 3 || req.session.user.role_name === 'admin';
         res.locals.isLoggedIn = true;
     } else {
         res.locals.currentUser = null;

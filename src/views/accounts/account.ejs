@@ -27,39 +27,6 @@
                 <p><strong>Login Time:</strong> <%= loginTime.toLocaleString() %></p>
             </section>
 
-            <% if (isAdmin) { %>
-            <section class="flower-management card">
-                <h2>Flower Management</h2>
-                <section class="flowers-overview">
-                    <h3>Current Flowers</h3>
-                    <% if (!flowers || flowers.length === 0) { %>
-                        <p>No flowers added yet. Add your first flower below.</p>
-                    <% } else { %>
-                        <div class="flowers-grid">
-                            <% flowers.forEach(flower => { %>
-                                <div class="flower-card">
-                                    <h4><%= flower.name %></h4>
-                                    <p>Category: <%= flower.category %></p>
-                                    <p>Price: $<%= flower.price %></p>
-                                    <img src="<%= flower.photo %>" alt="<%= flower.name %>" style="width:80px;height:80px;object-fit:cover;"/>
-                                </div>
-                            <% }); %>
-                        </div>
-                    <% } %>
-                </section>
-                <section class="add-flower-form">
-                    <h3>Add New Flower</h3>
-                    <form action="/dashboard/add-flower" method="POST">
-                        <label>Name: <input type="text" name="name" required></label><br>
-                        <label>Category: <input type="text" name="category" required></label><br>
-                        <label>Price: <input type="number" name="price" step="0.01" required></label><br>
-                        <label>Photo URL: <input type="text" name="photo" required></label><br>
-                        <button type="submit">Add Flower</button>
-                    </form>
-                </section>
-            </section>
-            <% } %>
-
             <section class="dashboard-actions card">
                 <h3>Quick Actions</h3>
                 <ul>
@@ -74,6 +41,11 @@
         <div class="logout-section card">
             <form action="/accounts/logout" method="POST" class="logout-form">
                 <button type="submit" class="logout-button">Logout</button>
+            </form>
+        </div>
+        <div class="delete-account-section card">
+            <form action="/accounts/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+                <button type="submit" class="btn-delete-account">Delete My Account</button>
             </form>
         </div>
     </div>

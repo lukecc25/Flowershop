@@ -15,6 +15,7 @@ import accountRoutes from './src/routes/accounts/index.js';
 import flowersRoutes from './src/routes/flowers.js';
 import cartRoutes from './src/routes/cart.js';
 import ordersRoutes from './src/routes/orders.js';
+import contactRoutes from './src/routes/contact.js';
 
 // Import global middleware
 import {
@@ -95,6 +96,7 @@ app.use('/accounts', accountRoutes);
 app.use('/cart', cartRoutes);
 app.use('/orders', ordersRoutes);
 app.use('/dashboard', dashboardRoutes);
+app.use('/contact', contactRoutes);
 
 // Manual error test route
 app.get('/manual-error', (req, res, next) => {
