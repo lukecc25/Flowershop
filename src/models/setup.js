@@ -38,6 +38,7 @@ const createOrdersTable = `
         total_amount DECIMAL(10,2) NOT NULL,
         order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         status VARCHAR(50) DEFAULT 'pending',
+        bouquet_descriptions JSONB,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
     );
 `;

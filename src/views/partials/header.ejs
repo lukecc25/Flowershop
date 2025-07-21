@@ -70,9 +70,8 @@
                     <li><a href="/accounts/account">My Account</a></li>
                     <li><a href="/orders/history">Order History</a></li>
                     <li>
-                        <form action="/accounts/logout" method="POST" style="display: inline;">
-                            <button type="submit" class="nav-logout-btn">Logout</button>
-                        </form>
+                        <a href="#" class="nav-logout-btn" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+                        <form id="logout-form" action="/accounts/logout" method="POST" style="display: none;"></form>
                     </li>
                 <% } else { %>
                     <li><a href="/accounts/login">Login</a></li>

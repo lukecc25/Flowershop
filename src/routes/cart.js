@@ -343,7 +343,15 @@ router.post('/checkout', async (req, res) => {
             req.flash('error', 'Cart is empty');
             return res.redirect('/cart');
         }
-        const { name, email, address } = req.body;
+        const { name, email, address, description } = req.body;
+        // Save bouquet descriptions from the checkout form
+        if (description && req.session.cart.bouquets) {
+            Object.entries(description).forEach(([idx, desc]) => {
+                if (req.session.cart.bouquets[idx]) {
+                    req.session.cart.bouquets[idx].description = desc;
+                }
+            });
+        }
         // Basic validation
         if (!name || !email || !address) {
             req.flash('error', 'Please fill in all required fields');
@@ -359,7 +367,8 @@ router.post('/checkout', async (req, res) => {
                 flower_id: item.id, // use flower_id for DB
                 quantity: item.quantity,
                 price: item.price
-            }))
+            })),
+            bouquet_descriptions: req.session.cart.bouquets.map(b => ({ name: b.name, description: b.description || '' }))
         };
         // Create order
         const order = await createOrder(orderData);

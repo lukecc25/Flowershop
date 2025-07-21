@@ -1,7 +1,10 @@
 <%- include('../partials/header') %>
 <main>
     <div class="account-container">
-        <h1 class="account-title">Order History</h1>
+        <div class="order-history-header-row">
+            <h1 class="account-title">Order History</h1>
+            <button id="toggle-sort-btn" class="btn btn-green-hover" style="margin-bottom:0;">Sort: Newest to Oldest</button>
+        </div>
 
         <%- include('../partials/flash') %>
 
@@ -11,7 +14,7 @@
                 <a href="/flowers" class="btn">Start Shopping</a>
             </div>
         <% } else { %>
-            <div class="orders-container">
+            <div class="orders-container" id="orders-container">
                 <% 
                 // Group orders by order ID
                 const orderGroups = {};
@@ -22,6 +25,7 @@
                             total_amount: item.total_amount,
                             order_date: item.order_date,
                             status: item.status,
+                            bouquet_descriptions: item.bouquet_descriptions, // ensure this is included
                             items: []
                         };
                     }
@@ -35,9 +39,10 @@
                     }
                 });
                 %>
-
+                <div id="order-cards-list">
                 <% let userOrderNumber = 1; %>
                 <% Object.values(orderGroups).forEach((order, idx, arr) => { %>
+                    <!-- DEBUG: bouquet_descriptions: <%= JSON.stringify(order.bouquet_descriptions) %> -->
                     <div class="order-card card" style="margin-bottom: 2em;">
                         <div class="order-header">
                             <h3>Order #<%= userOrderNumber++ %></h3>
@@ -63,17 +68,68 @@
                                 </div>
                             <% }); %>
                         </div>
-                        
-                        <div class="order-total">
-                            <strong>Total: $<%= parseFloat(order.total_amount || 0).toFixed(2) %></strong>
+                        <div class="order-bottom-row" style="display: flex; align-items: flex-start; justify-content: space-between; gap: 1em;">
+                            <div class="order-total">
+                                <strong>Total: $<%= parseFloat(order.total_amount || 0).toFixed(2) %></strong>
+                            </div>
+                            <% if (order.bouquet_descriptions) { %>
+                                <% let hasDesc = false;
+                                   let descs = typeof order.bouquet_descriptions === 'string' ? JSON.parse(order.bouquet_descriptions) : order.bouquet_descriptions;
+                                   if (Array.isArray(descs)) {
+                                       hasDesc = descs.some(desc => desc.description && desc.description.trim());
+                                   }
+                                %>
+                                <% if (hasDesc) { %>
+                                    <div class="order-desc-dropdown">
+                                        <button class="btn btn-toggle-desc btn-green-hover" type="button" onclick="toggleDescription('desc-<%= order.id %>')">
+                                            <span id="arrow-<%= order.id %>">&#9660;</span> Show Customization
+                                        </button>
+                                        <div id="desc-<%= order.id %>" class="order-bouquet-desc" style="display:none;">
+                                            <% descs.forEach((desc, i) => { %>
+                                                <% if (desc.description && desc.description.trim()) { %>
+                                                    <div class="bouquet-desc-item">
+                                                        <strong><%= desc.name %>:</strong> <%= desc.description %>
+                                                    </div>
+                                                <% } %>
+                                            <% }); %>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            <% } %>
                         </div>
                     </div>
                     <% if (idx < arr.length - 1) { %>
                         <hr style="border: 0; border-top: 2px solid var(--gold); margin: 2em 0;" />
                     <% } %>
                 <% }); %>
+                </div>
             </div>
         <% } %>
     </div>
 </main>
 <%- include('../partials/footer') %> 
+<script>
+function toggleDescription(id) {
+    var el = document.getElementById(id);
+    var arrow = document.getElementById('arrow-' + id.split('-')[1]);
+    if (el.style.display === 'none') {
+        el.style.display = 'block';
+        if (arrow) arrow.innerHTML = '&#9650;';
+    } else {
+        el.style.display = 'none';
+        if (arrow) arrow.innerHTML = '&#9660;';
+    }
+}
+// Sorting logic
+const orderCardsList = document.getElementById('order-cards-list');
+const toggleSortBtn = document.getElementById('toggle-sort-btn');
+let sortNewestFirst = true;
+toggleSortBtn.addEventListener('click', function() {
+    const cards = Array.from(orderCardsList.children);
+    cards.reverse();
+    orderCardsList.innerHTML = '';
+    cards.forEach(card => orderCardsList.appendChild(card));
+    sortNewestFirst = !sortNewestFirst;
+    toggleSortBtn.textContent = sortNewestFirst ? 'Sort: Newest to Oldest' : 'Sort: Oldest to Newest';
+});
+</script> 
